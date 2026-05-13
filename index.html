@@ -1,0 +1,219 @@
+<!--
+Copyright © Andrew Bethell. All rights reserved.
+Created by Andrew Bethell in his own time for his father following a stroke.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyNewVoice - Communication Tool</title>
+    <meta name="theme-color" content="#4CAF50">
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="script.js" as="script">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Toast Notifications -->
+        <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+        <!-- Auto-Save Indicator -->
+
+	<div id="autosaveIndicator" class="autosave-indicator" aria-live="polite" aria-atomic="true">
+  	💾 Saved
+	</div>
+
+        <!-- Message Display Bar -->
+        <div id="messageBar" role="status" aria-live="polite">
+            <button id="backToMenu" class="back-to-menu title-back-to-menu" type="button" aria-label="Return to main menu" hidden>←</button>
+            <p id="messageBarText">Select a button to speak...</p>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+        
+        <!-- Management Toggle Button -->
+        <button id="managementToggle" class="management-toggle" title="Settings" aria-label="Open settings">
+            ⚙️
+        </button>
+        <!-- Settings is the only main-screen control. About, maintenance, photo/voice setup and content setup are accessed from Settings. -->
+
+        <!-- Tab Navigation -->
+        <nav class="tab-container" role="tablist" aria-label="Communication categories">
+            <button class="tab active" data-category="quick" role="tab" aria-selected="true">Quick Words</button>
+            <button class="tab" data-category="health" role="tab" aria-selected="false">Health</button>
+            <button class="tab" data-category="selfcare" role="tab" aria-selected="false">Self Care</button>
+            <button class="tab" data-category="food" role="tab" aria-selected="false">Food & Drink</button>
+            <button class="tab" data-category="environment" role="tab" aria-selected="false">Comfort</button>
+            <button class="tab" data-category="MyPeople" role="tab" aria-selected="false">My People</button>
+            <button class="tab" data-category="feelings" role="tab" aria-selected="false">Feelings</button>
+            <button class="tab" data-category="routine" role="tab" aria-selected="false">Daily Routine</button>
+            <button class="tab" data-category="social" role="tab" aria-selected="false">Social Chat</button>
+            <button class="tab" data-category="activities" role="tab" aria-selected="false">Activities</button>
+            <button class="tab" data-category="memories" role="tab" aria-selected="false">Memories</button>
+        </nav>
+        
+        <!-- Selected Category Header removed in v8: submenu title and back button now live in the fixed top title bar. -->
+        <div id="submenuHeader" class="submenu-header" hidden></div>
+
+        <!-- Dynamic Button Grid -->
+        <div class="grid" id="buttonGrid" role="region" aria-label="Communication buttons" hidden>
+            <!-- Buttons will be loaded here by JavaScript -->
+        </div>
+
+        <!-- Password Prompt Modal -->
+        <div id="passwordModal" class="modal" role="dialog" aria-labelledby="passwordModalTitle" aria-modal="true">
+            <div class="modal-content">
+                <h3 id="passwordModalTitle">Management Access</h3>
+                <p>Enter password to manage content:</p>
+                <input type="password" id="passwordInput" placeholder="Enter password..." 
+                       class="management-input" aria-required="true">
+                <div class="modal-actions">
+                    <button id="passwordSubmit" class="management-btn">Access</button>
+                    <button id="passwordCancel" class="management-btn close-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Modal -->
+        <div id="aboutModal" class="modal" role="dialog" aria-labelledby="aboutModalTitle" aria-modal="true">
+            <div class="modal-content about-content">
+                <h3 id="aboutModalTitle">About MyNewVoice</h3>
+                <p>MyNewVoice was created by Andrew Bethell for his father following a stroke, in the hope of helping him engage with people and the world in a better way.</p>
+                <p class="privacy-note">This public template uses generic placeholders. Keep private names, phone numbers, birthdays, and family photos out of the public GitHub version.</p>
+                <div class="modal-actions">
+                    <button id="aboutClose" class="management-btn close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Management Overlay -->
+       <div id="managementOverlay" class="management-overlay">
+  <div id="managementPanel" class="management-panel" role="dialog" aria-labelledby="managementPanelTitle" aria-modal="true">
+
+      <h3 id="managementPanelTitle">Content Management</h3>
+      
+      <div class="management-section">
+          <h4>Export/Backup</h4>
+          <button id="exportData" class="management-btn">📥 Export All Data</button>
+          <button id="importData" class="management-btn">📤 Import Data</button>
+          <input type="file" id="importFile" accept=".json" style="display: none;">
+          <p class="help-text">Download a backup of all phrases and people or import from a backup file</p>
+      </div>
+
+
+            <div class="management-section">
+                <h4>Add New Phrase</h4>
+                <select id="addCategorySelect" class="management-input">
+                    <option value="quick">Quick Words</option>
+                    <option value="health">Health</option>
+                    <option value="selfcare">Self Care</option>
+                    <option value="food">Food & Drink</option>
+                    <option value="environment">Comfort</option>
+                    <option value="feelings">Feelings</option>
+                    <option value="routine">Daily Routine</option>
+                    <option value="social">Social Chat</option>
+                    <option value="activities">Activities</option>
+                    <option value="memories">Memories</option>
+                </select>
+                <input type="text" id="newPhraseText" placeholder="Enter phrase text..." 
+                       class="management-input" maxlength="200">
+                <input type="text" id="newPhraseImage" placeholder="Photo filename, e.g. food01.jpg (optional)" 
+                       class="management-input">
+                <button id="addPhrase" class="management-btn">➕ Add Phrase</button>
+            </div>
+
+            <div class="management-section">
+                <h4>Remove Phrase</h4>
+                <select id="removeCategorySelect" class="management-input">
+                    <option value="quick">Quick Words</option>
+                    <option value="health">Health</option>
+                    <option value="selfcare">Self Care</option>
+                    <option value="food">Food & Drink</option>
+                    <option value="environment">Comfort</option>
+                    <option value="feelings">Feelings</option>
+                    <option value="routine">Daily Routine</option>
+                    <option value="social">Social Chat</option>
+                    <option value="activities">Activities</option>
+                    <option value="memories">Memories</option>
+                </select>
+                <select id="removePhraseSelect" class="management-input">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+                <button id="removePhrase" class="management-btn remove-btn">🗑️ Remove Selected Phrase</button>
+            </div>
+
+            <div class="management-section">
+                <h4>Edit Existing Phrase</h4>
+                <select id="editCategorySelect" class="management-input">
+                    <option value="quick">Quick Words</option>
+                    <option value="health">Health</option>
+                    <option value="selfcare">Self Care</option>
+                    <option value="food">Food & Drink</option>
+                    <option value="environment">Comfort</option>
+                    <option value="feelings">Feelings</option>
+                    <option value="routine">Daily Routine</option>
+                    <option value="social">Social Chat</option>
+                    <option value="activities">Activities</option>
+                    <option value="memories">Memories</option>
+                </select>
+                <select id="editPhraseSelect" class="management-input">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+                <input type="text" id="editPhraseText" placeholder="New phrase text..." 
+                       class="management-input" maxlength="200">
+                <input type="text" id="editPhraseImage" placeholder="Photo filename, e.g. food01.jpg (optional)" 
+                       class="management-input">
+                <button id="updatePhrase" class="management-btn">✏️ Update Phrase</button>
+            </div>
+
+            <div class="management-section">
+                <h4>Reorder Phrases</h4>
+                <select id="reorderCategorySelect" class="management-input">
+                    <option value="quick">Quick Words</option>
+                    <option value="health">Health</option>
+                    <option value="selfcare">Self Care</option>
+                    <option value="food">Food & Drink</option>
+                    <option value="environment">Comfort</option>
+                    <option value="feelings">Feelings</option>
+                    <option value="routine">Daily Routine</option>
+                    <option value="social">Social Chat</option>
+                    <option value="activities">Activities</option>
+                    <option value="memories">Memories</option>
+                </select>
+                <div class="reorder-container">
+                    <ul id="phraseList" class="phrase-list" aria-label="Phrases for reordering">
+                        <!-- Phrases will be populated here for reordering -->
+                    </ul>
+                </div>
+                <button id="saveOrder" class="management-btn">💾 Save New Order</button>
+                <p class="help-text">Drag phrases up or down to reorder them</p>
+            </div>
+
+            <div class="management-section">
+                <h4>People Management</h4>
+                <button id="managePeople" class="management-btn">👥 Manage People</button>
+                <p class="help-text">Add, edit, or remove people from My People section</p>
+            </div>
+
+            <div class="management-section">
+                <h4>Quick Actions</h4>
+                <button id="showAllPhrases" class="management-btn">👁️ View All Phrases</button>
+                <button id="reloadApp" class="management-btn">🔄 Reload App</button>
+                <button id="resetData" class="management-btn remove-btn">🔄 Reset to Default Data</button>
+            </div>
+
+              <button id="closeManagement" class="management-btn close-btn">❌ Close Management</button>
+  </div>
+</div>
+    
+    <script src="script.js" defer></script>
+
+
+</body>
+</html>

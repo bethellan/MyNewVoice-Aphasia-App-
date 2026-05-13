@@ -1,0 +1,195 @@
+MyNewVoice image naming guide - v9 content refinement
+
+Privacy: do not put private family photos, names, phone numbers, birthdays, or identifying details in a public GitHub repository. Use local/private device setup for personal photos and recorded voices.
+
+Top menu images go in images/menu/:
+
+- Quick Words: images/menu/menu01_quick.jpg
+- Health: images/menu/menu02_health.jpg
+- Self Care: images/menu/menu03_selfcare.jpg
+- Food & Drink: images/menu/menu04_food.jpg
+- Comfort: images/menu/menu05_comfort.jpg
+- My People: images/menu/menu06_people.jpg
+- Feelings: images/menu/menu07_feelings.jpg
+- Daily Routine: images/menu/menu08_routine.jpg
+- Social Chat: images/menu/menu09_social.jpg
+- Activities: images/menu/menu10_activities.jpg
+- Memories: images/menu/menu11_memories.jpg
+
+Phrase images go in the matching category folder. Optional zoom images use the same stable ID in images/zoom/.
+
+
+Quick Words:
+- Yes -> images/quick/quick01.jpg ; optional zoom: images/zoom/quick01.jpg
+- No -> images/quick/quick02.jpg ; optional zoom: images/zoom/quick02.jpg
+- Maybe -> images/quick/quick03.jpg ; optional zoom: images/zoom/quick03.jpg
+- I don't know -> images/quick/quick04.jpg ; optional zoom: images/zoom/quick04.jpg
+- Please wait -> images/quick/quick05.jpg ; optional zoom: images/zoom/quick05.jpg
+- Stop -> images/quick/quick06.jpg ; optional zoom: images/zoom/quick06.jpg
+- Not that one -> images/quick/quick07.jpg ; optional zoom: images/zoom/quick07.jpg
+- This one -> images/quick/quick08.jpg ; optional zoom: images/zoom/quick08.jpg
+- I need help -> images/quick/quick09.jpg ; optional zoom: images/zoom/quick09.jpg
+- Please speak slowly -> images/quick/quick10.jpg ; optional zoom: images/zoom/quick10.jpg
+- Please write it down -> images/quick/quick11.jpg ; optional zoom: images/zoom/quick11.jpg
+- Give me time -> images/quick/quick12.jpg ; optional zoom: images/zoom/quick12.jpg
+
+Health:
+- I need help now -> images/health/health01.jpg ; optional zoom: images/zoom/health01.jpg
+- This is urgent -> images/health/health02.jpg ; optional zoom: images/zoom/health02.jpg
+- I've fallen and need help -> images/health/health03.jpg ; optional zoom: images/zoom/health03.jpg
+- I'm having trouble breathing -> images/health/health04.jpg ; optional zoom: images/zoom/health04.jpg
+- I have chest pain -> images/health/health05.jpg ; optional zoom: images/zoom/health05.jpg
+- Please call an ambulance -> images/health/health06.jpg ; optional zoom: images/zoom/health06.jpg
+- Please call the nurse -> images/health/health07.jpg ; optional zoom: images/zoom/health07.jpg
+- I don't feel right -> images/health/health08.jpg ; optional zoom: images/zoom/health08.jpg
+- I feel sick -> images/health/health09.jpg ; optional zoom: images/zoom/health09.jpg
+- I feel dizzy -> images/health/health10.jpg ; optional zoom: images/zoom/health10.jpg
+- I feel like I might faint -> images/health/health11.jpg ; optional zoom: images/zoom/health11.jpg
+- I'm in pain -> images/health/health12.jpg ; optional zoom: images/zoom/health12.jpg
+- I need my pain medication -> images/health/health13.jpg ; optional zoom: images/zoom/health13.jpg
+- My back is hurting -> images/health/health14.jpg ; optional zoom: images/zoom/health14.jpg
+- My leg is cramping -> images/health/health15.jpg ; optional zoom: images/zoom/health15.jpg
+- Please check my blood pressure -> images/health/health16.jpg ; optional zoom: images/zoom/health16.jpg
+- I think I have a fever -> images/health/health17.jpg ; optional zoom: images/zoom/health17.jpg
+- Call my family immediately -> images/health/health18.jpg ; optional zoom: images/zoom/health18.jpg
+
+Self Care:
+- I need the toilet -> images/selfcare/selfcare01.jpg ; optional zoom: images/zoom/selfcare01.jpg
+- I need to change position -> images/selfcare/selfcare02.jpg ; optional zoom: images/zoom/selfcare02.jpg
+- I need my glasses -> images/selfcare/selfcare03.jpg ; optional zoom: images/zoom/selfcare03.jpg
+- My hearing aid needs adjusting -> images/selfcare/selfcare04.jpg ; optional zoom: images/zoom/selfcare04.jpg
+- Can you help me turn over? -> images/selfcare/selfcare05.jpg ; optional zoom: images/zoom/selfcare05.jpg
+- Can you adjust my pillow? -> images/selfcare/selfcare06.jpg ; optional zoom: images/zoom/selfcare06.jpg
+- I need my medication -> images/selfcare/selfcare07.jpg ; optional zoom: images/zoom/selfcare07.jpg
+- I want to shower -> images/selfcare/selfcare08.jpg ; optional zoom: images/zoom/selfcare08.jpg
+- I'd like to brush my teeth -> images/selfcare/selfcare09.jpg ; optional zoom: images/zoom/selfcare09.jpg
+- I'd like to wash my face -> images/selfcare/selfcare10.jpg ; optional zoom: images/zoom/selfcare10.jpg
+- I need to shave -> images/selfcare/selfcare11.jpg ; optional zoom: images/zoom/selfcare11.jpg
+- Can you help me get dressed? -> images/selfcare/selfcare12.jpg ; optional zoom: images/zoom/selfcare12.jpg
+- Can you help me with my shoes? -> images/selfcare/selfcare13.jpg ; optional zoom: images/zoom/selfcare13.jpg
+- I'm ready for bed -> images/selfcare/selfcare14.jpg ; optional zoom: images/zoom/selfcare14.jpg
+- I'm too hot -> images/selfcare/selfcare15.jpg ; optional zoom: images/zoom/selfcare15.jpg
+- I'm too cold -> images/selfcare/selfcare16.jpg ; optional zoom: images/zoom/selfcare16.jpg
+- My feet are cold -> images/selfcare/selfcare17.jpg ; optional zoom: images/zoom/selfcare17.jpg
+- Could you fluff my pillows? -> images/selfcare/selfcare18.jpg ; optional zoom: images/zoom/selfcare18.jpg
+
+Food & Drink:
+- I'm thirsty -> images/food/food01.jpg ; optional zoom: images/zoom/food01.jpg
+- I'd like water please -> images/food/food02.jpg ; optional zoom: images/zoom/food02.jpg
+- I'm hungry -> images/food/food03.jpg ; optional zoom: images/zoom/food03.jpg
+- Can I have a snack? -> images/food/food04.jpg ; optional zoom: images/zoom/food04.jpg
+- What can I eat? -> images/food/food05.jpg ; optional zoom: images/zoom/food05.jpg
+- I'd like coffee please -> images/food/food06.jpg ; optional zoom: images/zoom/food06.jpg
+- I'd like a cup of tea -> images/food/food07.jpg ; optional zoom: images/zoom/food07.jpg
+- Could I have some toast? -> images/food/food08.jpg ; optional zoom: images/zoom/food08.jpg
+- I'd like soup please -> images/food/food09.jpg ; optional zoom: images/zoom/food09.jpg
+- I'm not hungry -> images/food/food10.jpg ; optional zoom: images/zoom/food10.jpg
+- I'm full -> images/food/food11.jpg ; optional zoom: images/zoom/food11.jpg
+- No more thank you -> images/food/food12.jpg ; optional zoom: images/zoom/food12.jpg
+- That was delicious -> images/food/food13.jpg ; optional zoom: images/zoom/food13.jpg
+
+Comfort:
+- I want to rest -> images/environment/comfort01.jpg ; optional zoom: images/zoom/comfort01.jpg
+- I need privacy -> images/environment/comfort02.jpg ; optional zoom: images/zoom/comfort02.jpg
+- Please close the door -> images/environment/comfort03.jpg ; optional zoom: images/zoom/comfort03.jpg
+- It's too cold in here -> images/environment/comfort04.jpg ; optional zoom: images/zoom/comfort04.jpg
+- It's too warm -> images/environment/comfort05.jpg ; optional zoom: images/zoom/comfort05.jpg
+- The light is too bright -> images/environment/comfort06.jpg ; optional zoom: images/zoom/comfort06.jpg
+- I need more light -> images/environment/comfort07.jpg ; optional zoom: images/zoom/comfort07.jpg
+- This noise is bothering me -> images/environment/comfort08.jpg ; optional zoom: images/zoom/comfort08.jpg
+- The TV is too loud -> images/environment/comfort09.jpg ; optional zoom: images/zoom/comfort09.jpg
+- Please open the window -> images/environment/comfort10.jpg ; optional zoom: images/zoom/comfort10.jpg
+- Please close the window -> images/environment/comfort11.jpg ; optional zoom: images/zoom/comfort11.jpg
+- Can you close the curtains? -> images/environment/comfort12.jpg ; optional zoom: images/zoom/comfort12.jpg
+- The room is too stuffy -> images/environment/comfort13.jpg ; optional zoom: images/zoom/comfort13.jpg
+- Can you turn on the fan? -> images/environment/comfort14.jpg ; optional zoom: images/zoom/comfort14.jpg
+- I need fresh air -> images/environment/comfort15.jpg ; optional zoom: images/zoom/comfort15.jpg
+- Please move this closer -> images/environment/comfort16.jpg ; optional zoom: images/zoom/comfort16.jpg
+- Please move this away -> images/environment/comfort17.jpg ; optional zoom: images/zoom/comfort17.jpg
+- Could you adjust my chair? -> images/environment/comfort18.jpg ; optional zoom: images/zoom/comfort18.jpg
+- I'd like to sit outside -> images/environment/comfort19.jpg ; optional zoom: images/zoom/comfort19.jpg
+
+My People:
+- Person 1 -> images/MyPeople/people01.jpg ; optional zoom: images/zoom/people01.jpg
+- Person 2 -> images/MyPeople/people02.jpg ; optional zoom: images/zoom/people02.jpg
+- Person 3 -> images/MyPeople/people03.jpg ; optional zoom: images/zoom/people03.jpg
+- Person 4 -> images/MyPeople/people04.jpg ; optional zoom: images/zoom/people04.jpg
+- Person 5 -> images/MyPeople/people05.jpg ; optional zoom: images/zoom/people05.jpg
+- Person 6 -> images/MyPeople/people06.jpg ; optional zoom: images/zoom/people06.jpg
+
+Feelings:
+- I'm in pain -> images/feelings/feelings01.jpg ; optional zoom: images/zoom/feelings01.jpg
+- I'm scared -> images/feelings/feelings02.jpg ; optional zoom: images/zoom/feelings02.jpg
+- I'm worried -> images/feelings/feelings03.jpg ; optional zoom: images/zoom/feelings03.jpg
+- I'm confused -> images/feelings/feelings04.jpg ; optional zoom: images/zoom/feelings04.jpg
+- I feel overwhelmed -> images/feelings/feelings05.jpg ; optional zoom: images/zoom/feelings05.jpg
+- I need quiet -> images/feelings/feelings06.jpg ; optional zoom: images/zoom/feelings06.jpg
+- I need reassurance -> images/feelings/feelings07.jpg ; optional zoom: images/zoom/feelings07.jpg
+- I'm sad -> images/feelings/feelings08.jpg ; optional zoom: images/zoom/feelings08.jpg
+- I'm happy -> images/feelings/feelings09.jpg ; optional zoom: images/zoom/feelings09.jpg
+- I'm tired -> images/feelings/feelings10.jpg ; optional zoom: images/zoom/feelings10.jpg
+- I'm frustrated -> images/feelings/feelings11.jpg ; optional zoom: images/zoom/feelings11.jpg
+- I need a hug -> images/feelings/feelings12.jpg ; optional zoom: images/zoom/feelings12.jpg
+- I'm comfortable -> images/feelings/feelings13.jpg ; optional zoom: images/zoom/feelings13.jpg
+- I feel great today -> images/feelings/feelings14.jpg ; optional zoom: images/zoom/feelings14.jpg
+
+Daily Routine:
+- What is happening next? -> images/routine/routine01.jpg ; optional zoom: images/zoom/routine01.jpg
+- Who is looking after me today? -> images/routine/routine02.jpg ; optional zoom: images/zoom/routine02.jpg
+- What day is it today? -> images/routine/routine03.jpg ; optional zoom: images/zoom/routine03.jpg
+- What's happening today? -> images/routine/routine04.jpg ; optional zoom: images/zoom/routine04.jpg
+- Who is visiting today? -> images/routine/routine05.jpg ; optional zoom: images/zoom/routine05.jpg
+- Am I going somewhere today? -> images/routine/routine06.jpg ; optional zoom: images/zoom/routine06.jpg
+- When are we leaving? -> images/routine/routine07.jpg ; optional zoom: images/zoom/routine07.jpg
+- What time is my appointment? -> images/routine/routine08.jpg ; optional zoom: images/zoom/routine08.jpg
+- Is it time for my medication? -> images/routine/routine09.jpg ; optional zoom: images/zoom/routine09.jpg
+- What's for breakfast? -> images/routine/routine10.jpg ; optional zoom: images/zoom/routine10.jpg
+- What's the weather like? -> images/routine/routine11.jpg ; optional zoom: images/zoom/routine11.jpg
+- What's the plan for this afternoon? -> images/routine/routine12.jpg ; optional zoom: images/zoom/routine12.jpg
+- What time are you coming tomorrow? -> images/routine/routine13.jpg ; optional zoom: images/zoom/routine13.jpg
+
+Social Chat:
+- Please slow down -> images/social/social01.jpg ; optional zoom: images/zoom/social01.jpg
+- Please say that again -> images/social/social02.jpg ; optional zoom: images/zoom/social02.jpg
+- Please write it down -> images/social/social03.jpg ; optional zoom: images/zoom/social03.jpg
+- Give me time -> images/social/social04.jpg ; optional zoom: images/zoom/social04.jpg
+- I know what I mean -> images/social/social05.jpg ; optional zoom: images/zoom/social05.jpg
+- I can't get the words out -> images/social/social06.jpg ; optional zoom: images/zoom/social06.jpg
+- I don't understand -> images/social/social07.jpg ; optional zoom: images/zoom/social07.jpg
+- Could you repeat that? -> images/social/social08.jpg ; optional zoom: images/zoom/social08.jpg
+- Thank you for helping me -> images/social/social09.jpg ; optional zoom: images/zoom/social09.jpg
+- You're very kind -> images/social/social10.jpg ; optional zoom: images/zoom/social10.jpg
+- I'd like some company -> images/social/social11.jpg ; optional zoom: images/zoom/social11.jpg
+- I'm feeling lonely -> images/social/social12.jpg ; optional zoom: images/zoom/social12.jpg
+- Could you help me make a phone call? -> images/social/social13.jpg ; optional zoom: images/zoom/social13.jpg
+- How are you today? -> images/social/social14.jpg ; optional zoom: images/zoom/social14.jpg
+- Tell me about your day -> images/social/social15.jpg ; optional zoom: images/zoom/social15.jpg
+- Let's talk about the family -> images/social/social16.jpg ; optional zoom: images/zoom/social16.jpg
+- That's interesting -> images/social/social17.jpg ; optional zoom: images/zoom/social17.jpg
+
+Activities:
+- I'd like to watch TV -> images/activities/activities01.jpg ; optional zoom: images/zoom/activities01.jpg
+- Can we go for a walk? -> images/activities/activities02.jpg ; optional zoom: images/zoom/activities02.jpg
+- I want to listen to music -> images/activities/activities03.jpg ; optional zoom: images/zoom/activities03.jpg
+- I'd like to look at photos -> images/activities/activities04.jpg ; optional zoom: images/zoom/activities04.jpg
+- I'd like to read -> images/activities/activities05.jpg ; optional zoom: images/zoom/activities05.jpg
+- Can we play a game? -> images/activities/activities06.jpg ; optional zoom: images/zoom/activities06.jpg
+- I want to exercise -> images/activities/activities07.jpg ; optional zoom: images/zoom/activities07.jpg
+- Let's sit in the garden -> images/activities/activities08.jpg ; optional zoom: images/zoom/activities08.jpg
+- I'd like to watch the news -> images/activities/activities09.jpg ; optional zoom: images/zoom/activities09.jpg
+- I'd like to listen to the radio -> images/activities/activities10.jpg ; optional zoom: images/zoom/activities10.jpg
+- Can we watch a movie? -> images/activities/activities11.jpg ; optional zoom: images/zoom/activities11.jpg
+- Let's watch the cricket -> images/activities/activities12.jpg ; optional zoom: images/zoom/activities12.jpg
+- Let's talk about rugby -> images/activities/activities13.jpg ; optional zoom: images/zoom/activities13.jpg
+- I'd like to do a puzzle -> images/activities/activities14.jpg ; optional zoom: images/zoom/activities14.jpg
+
+Memories:
+- I'd like to talk about when we lived in... -> images/memories/memories01.jpg ; optional zoom: images/zoom/memories01.jpg
+- I'd like to talk about our holiday -> images/memories/memories02.jpg ; optional zoom: images/zoom/memories02.jpg
+- I'd like to talk about my childhood -> images/memories/memories03.jpg ; optional zoom: images/zoom/memories03.jpg
+- I'd like to talk about when the children were little -> images/memories/memories04.jpg ; optional zoom: images/zoom/memories04.jpg
+- I'd like to talk about our wedding day -> images/memories/memories05.jpg ; optional zoom: images/zoom/memories05.jpg
+- I'd like to talk about my first job -> images/memories/memories06.jpg ; optional zoom: images/zoom/memories06.jpg
+- I'd like to talk about my school days -> images/memories/memories07.jpg ; optional zoom: images/zoom/memories07.jpg
+- Let's talk about our favourite restaurant -> images/memories/memories08.jpg ; optional zoom: images/zoom/memories08.jpg
+- I'd like to look at old photos -> images/memories/memories09.jpg ; optional zoom: images/zoom/memories09.jpg

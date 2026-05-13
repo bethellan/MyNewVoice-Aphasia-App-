@@ -1,0 +1,10 @@
+MyNewVoice v17 - separate clear images/audio maintenance
+
+Added password-protected Settings actions:
+- Remove all images
+- Remove all audio
+
+Each action has a two-step confirmation prompt because it is destructive.
+Removing images keeps recorded voices, text, menu structure, and phrase setup.
+Removing audio keeps images, text, menu structure, and phrase setup; phrases fall back to device speech.
+Export a complete backup before using either action if the current setup needs to be preserved.

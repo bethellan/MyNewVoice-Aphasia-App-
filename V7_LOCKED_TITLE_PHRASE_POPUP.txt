@@ -1,0 +1,12 @@
+MyNewVoice v7 - locked title bar and spoken phrase popup
+
+Changes:
+- The top title/speech bar remains fixed in place.
+- On the main menu, the title bar says: Select a button to speak...
+- Inside a submenu, the title bar displays the selected menu name, such as Food & Drink or Comfort.
+- Only the menu cards / phrase rows scroll.
+- Tapping a phrase opens a large popup showing the selected sentence.
+- The app plays the locally recorded voice if one exists.
+- If no recorded voice exists, the device-generated voice is used.
+- Optional zoom images now appear inside the spoken phrase popup.
+- Existing image naming, local photo setup, local voice recording, backup/import, category colours, and stacked layout are retained.

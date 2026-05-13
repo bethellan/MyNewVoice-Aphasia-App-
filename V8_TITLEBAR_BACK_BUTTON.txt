@@ -1,0 +1,8 @@
+MyNewVoice v8 - Titlebar Back Button
+
+Changes:
+- Removed the redundant submenu title/header bar.
+- Moved the "← Main menu" button into the fixed top title bar when inside a submenu.
+- Main menu still shows "Select a button to speak..." with no back button.
+- Phrase list remains the only scrolling content inside a submenu.
+- Phrase popup, recorded voice playback, device voice fallback, photos, zoom images, settings, and backups are retained.

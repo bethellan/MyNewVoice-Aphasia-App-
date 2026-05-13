@@ -1,0 +1,9 @@
+MyNewVoice v18 - PC text-to-speech fallback and submenu titlebar split
+
+Changes:
+- Improved browser/device text-to-speech fallback when no recorded voice exists.
+- Keeps a live utterance reference and retries once after voices initialise for desktop Chrome/Edge.
+- Adds speech priming after the first user gesture.
+- Splits submenu title bar into a left square back-arrow button and a larger title section.
+- Prevents the back button from overlapping the submenu title.
+- Preserves backup/export schema, local images, local audio, content setup and Dad-facing layout.

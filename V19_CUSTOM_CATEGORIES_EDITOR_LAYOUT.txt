@@ -1,0 +1,9 @@
+MyNewVoice v19 - Custom categories and editor-style settings
+
+Changes:
+- Imported custom top-menu categories from complete backups are now preserved and shown.
+- Unknown/custom category IDs are no longer filtered out during import or rendering.
+- Content editing now uses a more editor-style table layout inspired by the standalone MyNewVoice Backup Editor.
+- Settings top menu is simplified: editing, complete import/export, remove images/audio, refresh app code, and About.
+- Content Management now includes menu/phrase text editing plus picture and voice controls in the same carer editor area.
+- Backup/export schema is unchanged and remains compatible with v17+ complete backups and the separate editor.

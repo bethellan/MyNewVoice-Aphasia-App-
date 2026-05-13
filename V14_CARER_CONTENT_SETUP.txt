@@ -1,0 +1,13 @@
+MyNewVoice v14 - Carer Content Setup
+
+Changes:
+- Rebuilt Content Management as a password-protected carer dashboard.
+- Added top menu section editing: rename, hide/show, and reorder.
+- Added one-selected-phrase editing: edit text, optional fallback icon, hide/show, reorder, and delete.
+- Added safer Add Phrase workflow with automatic stable ID and photo filename generation.
+- Added content backup/export that includes phrase data and top menu configuration.
+- Preserved dad-facing communication layout, speech fallback, image cropper, photo/voice setup, and popup behaviour.
+
+Note:
+- Private photos and recorded voices are still managed and backed up separately through Photo / Voice Setup.
+- Hiding a phrase or section is safer than deleting it because hidden content can be restored later.

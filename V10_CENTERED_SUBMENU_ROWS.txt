@@ -1,0 +1,6 @@
+MyNewVoice v10 - Centered submenu rows
+
+Change summary:
+- Vertically centered the left image/icon and right phrase text within each large submenu row button.
+- Preserved stacked submenu layout, locked title bar, category colours, phrase popup, recorded voice fallback, device generated speech, photo setup and backup/import features.
+- Updated service-worker cache name to force refreshed CSS after GitHub upload.

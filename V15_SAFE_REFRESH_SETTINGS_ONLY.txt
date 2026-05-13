@@ -1,0 +1,11 @@
+MyNewVoice v15 - Safe Refresh and Settings-only Main Controls
+
+Changes:
+- Added Settings > Refresh app code.
+- Refresh app code deletes only MyNewVoice app caches and asks the service worker to update.
+- Refresh app code does not clear IndexedDB, so locally saved photos and recorded voices are preserved.
+- The refresh pathway is designed for iPhone/iPad, Android and desktop browsers.
+- Removed the main-screen About/info button. About is now inside Settings only.
+- Removed the main-screen day/night theme button. The app stays in the standard light appearance.
+- Settings remains the only floating main-screen control.
+- Settings is hidden inside submenus so the phrase screen stays uncluttered.

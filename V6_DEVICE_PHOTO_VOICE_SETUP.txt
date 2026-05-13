@@ -1,0 +1,25 @@
+MyNewVoice v6 - Device Photo / Voice Setup
+
+What this version adds:
+- The gear button now opens a Settings screen.
+- Settings includes Photo / Voice Setup.
+- Photos can be chosen on the device for:
+  - top menu cards
+  - phrase-row images
+  - optional 4-second zoom images
+- A voice can be recorded for each phrase.
+- Saved private photos and recorded voices are stored locally on that device/browser using IndexedDB.
+- Private media is not uploaded to GitHub.
+
+Normal tap behaviour:
+- If a recorded voice exists for a phrase, the phrase plays the recorded voice.
+- If no recorded voice exists, the phrase uses browser text-to-speech.
+- If a local private image exists, the app uses it first.
+- If no local private image exists, the app checks the GitHub image file.
+- If no image exists, the fallback icon is shown.
+
+Important:
+- Voice recording normally requires the app to be opened from an HTTPS address, such as GitHub Pages.
+- Local private media may be lost if browser/site data is cleared.
+- After setting up photos and voices, use Export private backup.
+- Use Import private backup to move the private setup to another device.

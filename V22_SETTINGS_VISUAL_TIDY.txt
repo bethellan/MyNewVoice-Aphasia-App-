@@ -1,0 +1,11 @@
+MyNewVoice v22 - Settings visual tidy
+
+Appearance-only update.
+
+Changes:
+- Tidied Settings dashboard styling.
+- Improved full-screen content editor header, table cards, row spacing, picture boxes, icon controls, action buttons, horizontal scroll hint, and sticky Save/Cancel bar.
+- No functionality changes.
+- No backup/export schema changes.
+- Local photos and audio are not cleared or modified.
+- Dad-facing communication layout and speech behaviour are unchanged.

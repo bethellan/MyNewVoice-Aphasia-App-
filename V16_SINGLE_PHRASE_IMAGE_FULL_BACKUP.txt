@@ -1,0 +1,12 @@
+MyNewVoice v16 - single phrase image and complete backup
+
+Changes:
+- Photo / Voice Setup wording now explains where the selected picture will appear.
+- Top menu images are cropped square and downsized before local storage.
+- Phrase photos use one image only: it appears beside the phrase and in the spoken popup.
+- My People photos are cropped circular.
+- Separate phrase zoom image setup has been removed from the setup workflow. Legacy zoom images may still display if already present.
+- Images are downsized/cropped at selection time to reduce storage and backup size.
+- Settings now includes password-protected complete backup export/import.
+- Complete backup preserves menu/phrase content, menu order/visibility, local photos, and recorded voices.
+- Backup files use the .mnvoice extension and are intended to work on iPhone/iPad, Android, and PC.

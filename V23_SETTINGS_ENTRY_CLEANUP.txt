@@ -1,0 +1,13 @@
+MyNewVoice v23 - Settings entry cleanup
+
+Changes:
+- Removed oversized Content Editor intro text from the top of the editor.
+- Added a Back to Settings button on the Content Editor topics screen.
+- Settings now opens directly as a full-screen panel instead of briefly appearing small then resizing.
+- Management editor opening animation/resize effect disabled.
+
+Preserved:
+- No backup/export schema changes.
+- No import/export behaviour changes.
+- No Dad-facing communication layout changes.
+- No local image/audio storage changes.

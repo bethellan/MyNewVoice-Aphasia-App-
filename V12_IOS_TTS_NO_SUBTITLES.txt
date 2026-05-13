@@ -1,0 +1,10 @@
+MyNewVoice v12 - iPhone text-to-speech fallback and popup cleanup
+
+Changes:
+- Fixed generated device speech fallback on iPhone/iPad by avoiding an async IndexedDB lookup before speechSynthesis when no local recording is known.
+- If a phrase has a recorded voice, the recording still plays first.
+- If no recorded voice exists, device text-to-speech starts immediately from the tap event.
+- Removed subtitles UI and subtitle overlay.
+- Removed the X button from the phrase popup.
+- Phrase popup now closes 2 seconds after recorded or generated speech finishes.
+- Existing photos, cropper, local voice recording, backup/import, menu order, and layout are retained.

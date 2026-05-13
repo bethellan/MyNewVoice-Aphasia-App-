@@ -1,0 +1,12 @@
+MyNewVoice v11 - Image cropper
+
+Changes:
+- Added a crop step after choosing a local photo in Settings -> Photo / Voice Setup.
+- Photos can be cropped before being saved locally on the device/browser.
+- Square and rectangle crop modes are available in the crop screen.
+- Phrase images default to square crops.
+- Top menu and zoom images default to rectangle crops.
+- Saved images are rendered with object-fit cover/contain as already appropriate, so images should not be stretched.
+- Submenu phrase rows and left image slots were made moderately taller so cropped photos are easier to see.
+
+Private photos and recorded voices remain local to the device/browser unless exported through the private backup tool.

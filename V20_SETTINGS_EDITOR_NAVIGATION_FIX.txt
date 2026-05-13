@@ -1,0 +1,17 @@
+MyNewVoice v20 - Settings/editor navigation fix
+
+Changes:
+- Settings now asks for the password once when Settings is opened.
+- Repeated password prompts were removed from the Settings actions.
+- Settings menu retained the practical carer actions: edit content/media, export complete backup, import complete backup, remove all images, remove all audio, refresh app code, and About.
+- The in-app MyNewVoice Content Editor now uses a two-step workflow:
+  1. Main menu topics table.
+  2. Edit content opens a separate phrase list screen for that selected topic.
+- The phrase editor/dropdown selector was removed from the top topics page.
+- The editor no longer closes when tapping outside the panel, reducing accidental shutdown during editing.
+- Management image thumbnail previews now load local stored images after selecting/taking/cropping a picture.
+- The image picker no longer forces camera-only capture, allowing the device/browser to offer camera, photo library, or file selection where supported.
+
+Backup schema:
+- No backup/export schema change.
+- The protected complete-backup fields remain unchanged: type, version, exportedAt, appVersion, buttonData, categoryConfig, mediaRecords.

@@ -1,0 +1,10 @@
+v9 content refinement
+
+Changes:
+- Reordered the main menu by communication priority: Quick Words, Health, Self Care, Food & Drink, Comfort, My People, Feelings, Daily Routine, Social Chat, Activities, Memories.
+- Added Quick Words with core yes/no/repair phrases.
+- Merged Entertainment into Activities and removed the separate Entertainment top-menu item.
+- Updated Food & Drink wording for clearer first-person phrases.
+- Expanded Feelings, Health, Daily Routine, Social Chat, Comfort and Memories with adult, first-person communication options.
+- Kept the existing layout, speech behaviour, photo setup, recorded voice setup, popup behaviour, and local backup/import system.
+- Bumped local phrase storage key so the new default phrase set appears after upload.
