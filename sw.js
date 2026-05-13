@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v25_settings_navigation_refine: settings exits only from main Settings menu; editor Save returns one level up.
-const CACHE_NAME = 'mynewvoice-v25-settings-navigation-refine';
+// v27_simple_vocabulary_and_press_delay: added optional simple vocabulary list and configurable press duration.
+const CACHE_NAME = 'mynewvoice-v27-simple-vocabulary-press-delay';
 const urlsToCache = [
   './',
   './index.html',

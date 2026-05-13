@@ -1,0 +1,9 @@
+MyNewVoice v27 - Simple Vocabulary View and Press Delay
+
+Changes:
+- Added Settings display mode: Menu view or Simple vocabulary list.
+- Simple vocabulary list shows all visible phrases grouped by section in one scrolling page.
+- Added Settings button press time: Normal tap, Long press, or Longer press.
+- Display and press settings are saved locally and also exported as optional appSettings in complete backups.
+- No protected backup fields were changed.
+- Dad-facing phrase rows, images, recorded voice priority, and generated speech fallback are preserved.

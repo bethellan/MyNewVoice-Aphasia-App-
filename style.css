@@ -2932,3 +2932,85 @@ body:not(.submenu-open) #messageBar {
     padding: 10px !important;
   }
 }
+
+/* v26_stabilised_codebase: settings/editor styling preserved; no schema or Dad-facing layout changes. */
+
+/* v27: Simple Vocabulary View and long-press accessibility settings */
+.settings-preferences {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 10px 0 16px;
+  padding: 14px;
+  border: 1px solid #d8e1ee;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+}
+
+.settings-preferences label {
+  font-weight: 900;
+  color: #1f2937;
+}
+
+.settings-select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 16px;
+  background: #ffffff;
+  color: #172033;
+}
+
+.settings-help {
+  margin: 0 0 6px;
+  color: #617086;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.simple-vocabulary-list {
+  gap: 12px;
+}
+
+.simple-vocabulary-heading {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 2px solid var(--category-color, #4CAF50);
+  background: linear-gradient(135deg, var(--category-color, #4CAF50), var(--category-dark, #2f7d32));
+  color: #ffffff;
+  font-size: clamp(1.1rem, 4vw, 1.45rem);
+  font-weight: 900;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.simple-heading-icon {
+  font-size: 1.35em;
+  line-height: 1;
+}
+
+.grid-button.press-waiting {
+  transform: scale(0.992);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.22), 0 7px 16px rgba(0,0,0,0.14);
+}
+
+.grid-button.press-waiting::after {
+  content: attr(data-hold-label);
+  position: absolute;
+  inset: auto 12px 10px auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 900;
+  pointer-events: none;
+}

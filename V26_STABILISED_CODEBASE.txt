@@ -1,0 +1,29 @@
+MyNewVoice v26 - Stabilised Codebase
+
+Purpose:
+Stabilisation-only pass from v25. No new Dad-facing features and no backup schema change.
+
+Cleaned:
+- Updated app/export version references to v26.
+- Removed duplicate/incorrect complete-backup import hooks from unrelated overlays.
+- Routed dormant legacy Photo / Voice Setup password path to the current editor-style content manager.
+- Made media refreshes update the current editor/communication UI and avoid unnecessary legacy overlay refreshes unless that overlay is visible.
+- Kept complete backup structure unchanged.
+
+Protected backup fields preserved:
+- type
+- version
+- exportedAt
+- appVersion
+- buttonData
+- categoryConfig
+- mediaRecords
+
+Manual testing still recommended:
+- Import v17+ backup.
+- Import backup with custom top-level category.
+- Phrase with recorded voice.
+- Phrase without recorded voice.
+- Image crop/load/delete.
+- Settings navigation save/cancel/back.
+- Refresh app code preserves local images/audio.

@@ -27,6 +27,8 @@ v8_titlebar_back_button - Removed the redundant submenu header and moved the Mai
    v23_settings_entry_cleanup - Removed oversized content editor intro, added Back to Settings, and disabled opening resize animation.
    v24_content_editor_fullscreen_fix - Forced the in-app content editor to open directly as a true full-screen overlay.
    v25_settings_navigation_refine - Settings now exits only from the main Settings menu; editor Save returns one level up.
+   v26_stabilised_codebase - Stabilised settings/import/media handlers, removed duplicate backup-import hooks, and integrated patch behaviour without changing the backup schema.
+   v27_simple_vocabulary_and_press_delay - Added optional simple vocabulary list view and configurable normal/long/longer press activation, saved locally and in complete backups as optional appSettings.
 */
 
 // ============================================================================
@@ -35,6 +37,7 @@ v8_titlebar_back_button - Removed the redundant submenu header and moved the Mai
 
 const STORAGE_KEY = 'mynewvoice_public_template_v9';
 const CATEGORY_CONFIG_KEY = 'mynewvoice_category_config_v14';
+const APP_SETTINGS_KEY = 'mynewvoice_app_settings_v27';
 const MANAGEMENT_PASSWORD = "19Hector";
 const DEFAULT_IMAGE = '';
 const MAIN_MENU_PROMPT = 'Select a button to speak...';
@@ -382,13 +385,6 @@ function ensureImageCropOverlay() {
             </div>
         </div>
     `;
-    overlay.addEventListener('change', (event) => {
-        if (event.target && event.target.id === 'fullBackupImportFile') {
-            importFullAppBackup(event.target.files && event.target.files[0]);
-            event.target.value = '';
-        }
-    });
-
     document.body.appendChild(overlay);
     return overlay;
 }
@@ -731,6 +727,21 @@ function ensureSettingsOverlay() {
             <div class="settings-header">
                 <h3 id="settingsTitle">Settings</h3>
             </div>
+            <div class="settings-preferences" aria-label="Communication display settings">
+                <label for="settingsDisplayMode">Display mode</label>
+                <select id="settingsDisplayMode" class="settings-select">
+                    <option value="menu">Menu view - choose a section first</option>
+                    <option value="simple-list">Simple vocabulary list - show all phrases</option>
+                </select>
+                <p class="settings-help">Simple vocabulary list removes the top menu cards and shows all phrases grouped by section in one scrolling list.</p>
+                <label for="settingsPressActivation">Button press time</label>
+                <select id="settingsPressActivation" class="settings-select">
+                    <option value="normal">Normal tap</option>
+                    <option value="long">Long press to speak</option>
+                    <option value="longer">Longer press to speak</option>
+                </select>
+                <p class="settings-help">Use long press if accidental swipes or brushes trigger phrase buttons.</p>
+            </div>
             <div class="settings-actions settings-actions-compact">
                 <button type="button" class="settings-action-btn" data-open-management>✏️ Edit menus, phrases, pictures & voices</button>
                 <button type="button" class="settings-action-btn" data-export-full-backup>📥 Export complete backup</button>
@@ -771,11 +782,6 @@ function ensureSettingsOverlay() {
             confirmAndClearAllAudio();
             return;
         }
-        if (event.target && event.target.id === 'fullBackupImportFile') {
-            importFullAppBackup(event.target.files && event.target.files[0]);
-            event.target.value = '';
-            return;
-        }
         if (event.target.closest('[data-refresh-app-code]')) {
             refreshAppCodeSafely();
             return;
@@ -788,6 +794,18 @@ function ensureSettingsOverlay() {
     });
 
     overlay.addEventListener('change', (event) => {
+        if (event.target && event.target.id === 'settingsDisplayMode') {
+            appSettings.displayMode = event.target.value;
+            saveAppSettings();
+            showToast(appSettings.displayMode === 'simple-list' ? 'Simple vocabulary list enabled' : 'Menu view enabled', 'success');
+            return;
+        }
+        if (event.target && event.target.id === 'settingsPressActivation') {
+            appSettings.pressActivation = event.target.value;
+            saveAppSettings({ render: false });
+            showToast(appSettings.pressActivation === 'normal' ? 'Normal tap enabled' : 'Long press setting saved', 'success');
+            return;
+        }
         if (event.target && event.target.id === 'fullBackupImportFile') {
             importFullAppBackup(event.target.files && event.target.files[0]);
             event.target.value = '';
@@ -800,6 +818,7 @@ function ensureSettingsOverlay() {
 
 function showSettingsOverlay() {
     const overlay = ensureSettingsOverlay();
+    updateSettingsControls();
     overlay.style.display = 'flex';
     requestAnimationFrame(() => overlay.classList.add('show'));
 }
@@ -1362,7 +1381,12 @@ async function refreshAfterPrivateMediaChange() {
     renderCategoryMenuCards();
     const grid = document.getElementById('buttonGrid');
     if (grid && !grid.hidden && grid.dataset.category) populateGrid(grid.dataset.category);
-    renderPrivateSetupContent();
+
+    // v26: the old Photo / Voice Setup overlay is retained only as a dormant compatibility path.
+    // Avoid refreshing its DOM unless it is actually visible, so the current editor remains the primary UI.
+    const privateSetupOverlay = document.getElementById('privateSetupOverlay');
+    if (privateSetupOverlay && privateSetupOverlay.classList.contains('show')) renderPrivateSetupContent();
+
     const managementOverlay = document.getElementById('managementOverlay');
     if (managementOverlay && managementOverlay.classList.contains('show')) renderContentManagementPanel();
 }
@@ -1426,7 +1450,7 @@ async function toggleVoiceRecording(key, text, button) {
                 showToast('Could not save recording', 'error');
             }
             cleanupRecorderState();
-            renderPrivateSetupContent();
+            await refreshAfterPrivateMediaChange();
         };
 
         activeRecorder.start();
@@ -1580,8 +1604,9 @@ async function buildCompleteBackupPayload() {
         type: FULL_APP_BACKUP_TYPE,
         version: 1,
         exportedAt: new Date().toISOString(),
-        appVersion: 'v25',
+        appVersion: 'v27',
         buttonData,
+        appSettings: normaliseAppSettings(appSettings),
         categoryConfig: normaliseCategoryConfig(categoryConfig),
         mediaRecords: exportRecords
     };
@@ -1619,6 +1644,10 @@ async function importFullAppBackup(file) {
         buttonData = payload.buttonData;
         categoryConfig = normaliseCategoryConfig(payload.categoryConfig || categoryConfig);
         saveCategoryConfig();
+        if (payload.appSettings) {
+            appSettings = normaliseAppSettings(payload.appSettings);
+            saveAppSettings({ render: false });
+        }
         saveDataToStorage();
 
         await clearPrivateMediaRecords();
@@ -1682,6 +1711,138 @@ async function confirmAndClearAllAudio() {
         console.error(error);
         showToast('Could not remove saved voice recordings', 'error');
     }
+}
+
+
+// ============================================================================
+// APP DISPLAY / ACCESSIBILITY SETTINGS
+// v27: Local, long-term settings for menu mode and press duration.
+// These are also exported as optional appSettings in complete backups without
+// changing the protected v17+ backup schema fields.
+// ============================================================================
+
+const DEFAULT_APP_SETTINGS = {
+    displayMode: 'menu',
+    pressActivation: 'normal'
+};
+const DISPLAY_MODES = new Set(['menu', 'simple-list']);
+const PRESS_ACTIVATION_DELAYS = {
+    normal: 0,
+    long: 650,
+    longer: 1100
+};
+let appSettings = { ...DEFAULT_APP_SETTINGS };
+let activePressTimer = null;
+let activePressButton = null;
+let suppressNextPhraseClick = false;
+
+function normaliseAppSettings(rawSettings) {
+    const raw = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
+    const displayMode = DISPLAY_MODES.has(raw.displayMode) ? raw.displayMode : DEFAULT_APP_SETTINGS.displayMode;
+    const pressActivation = Object.prototype.hasOwnProperty.call(PRESS_ACTIVATION_DELAYS, raw.pressActivation)
+        ? raw.pressActivation
+        : DEFAULT_APP_SETTINGS.pressActivation;
+    return { displayMode, pressActivation };
+}
+
+function loadAppSettings() {
+    try {
+        const stored = localStorage.getItem(APP_SETTINGS_KEY);
+        appSettings = normaliseAppSettings(stored ? JSON.parse(stored) : null);
+    } catch (error) {
+        console.warn('Could not load app settings; using defaults.', error);
+        appSettings = normaliseAppSettings(null);
+    }
+}
+
+function saveAppSettings({ render = true } = {}) {
+    appSettings = normaliseAppSettings(appSettings);
+    localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(appSettings));
+    showAutoSave();
+    updateSettingsControls();
+    if (render) showMainMenu();
+}
+
+function updateSettingsControls() {
+    const displayModeSelect = document.getElementById('settingsDisplayMode');
+    if (displayModeSelect) displayModeSelect.value = appSettings.displayMode;
+    const pressActivationSelect = document.getElementById('settingsPressActivation');
+    if (pressActivationSelect) pressActivationSelect.value = appSettings.pressActivation;
+}
+
+function getPressActivationDelay() {
+    const mode = normaliseAppSettings(appSettings).pressActivation;
+    return PRESS_ACTIVATION_DELAYS[mode] || 0;
+}
+
+function getPressActivationLabel() {
+    const mode = normaliseAppSettings(appSettings).pressActivation;
+    if (mode === 'longer') return 'Keep holding to speak';
+    if (mode === 'long') return 'Hold to speak';
+    return '';
+}
+
+function cancelPendingPhrasePress() {
+    if (activePressTimer) {
+        clearTimeout(activePressTimer);
+        activePressTimer = null;
+    }
+    if (activePressButton) {
+        activePressButton.classList.remove('press-waiting');
+        activePressButton.removeAttribute('data-hold-label');
+        activePressButton = null;
+    }
+}
+
+function attachPhraseActivation(button, buttonInfo) {
+    if (!button || !buttonInfo) return;
+    button.dataset.category = buttonInfo.category || button.dataset.category || '';
+    if (buttonInfo.id) button.dataset.phraseId = buttonInfo.id;
+
+    const activate = () => speakPhrase(buttonInfo, button);
+
+    button.addEventListener('click', (event) => {
+        if (getPressActivationDelay() > 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (suppressNextPhraseClick) suppressNextPhraseClick = false;
+            return;
+        }
+        activate();
+    });
+
+    button.addEventListener('pointerdown', (event) => {
+        const delay = getPressActivationDelay();
+        if (delay <= 0) return;
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        event.preventDefault();
+        cancelPendingPhrasePress();
+        activePressButton = button;
+        button.classList.add('press-waiting');
+        button.setAttribute('data-hold-label', getPressActivationLabel());
+        activePressTimer = setTimeout(() => {
+            activePressTimer = null;
+            const pressedButton = activePressButton;
+            activePressButton = null;
+            button.classList.remove('press-waiting');
+            button.removeAttribute('data-hold-label');
+            suppressNextPhraseClick = true;
+            if (pressedButton === button) activate();
+        }, delay);
+    });
+
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(eventName => {
+        button.addEventListener(eventName, () => {
+            if (activePressButton === button) cancelPendingPhrasePress();
+        });
+    });
+
+    button.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            activate();
+        }
+    });
 }
 
 const CATEGORY_META = {
@@ -1931,6 +2092,7 @@ function saveDataToStorage() {
     const payload = {
       buttonData,
       categoryConfig,
+      appSettings: normaliseAppSettings(appSettings),
       lastModified: new Date().toISOString()
     };
     const compressed = LZString.compressToUTF16(JSON.stringify(payload));
@@ -1956,6 +2118,10 @@ function loadDataFromStorage() {
         buttonData = parsed.buttonData || parsed;
         categoryConfig = normaliseCategoryConfig(parsed.categoryConfig || categoryConfig);
         saveCategoryConfig();
+        if (parsed.appSettings) {
+          appSettings = normaliseAppSettings(parsed.appSettings);
+          saveAppSettings({ render: false });
+        }
         console.log('Loaded uncompressed legacy data — re-saving as compressed.');
         saveDataToStorage(); // Re-compress and store safely
         return;
@@ -1971,6 +2137,10 @@ function loadDataFromStorage() {
       }
       categoryConfig = normaliseCategoryConfig(parsed.categoryConfig || categoryConfig);
       saveCategoryConfig();
+      if (parsed.appSettings) {
+        appSettings = normaliseAppSettings(parsed.appSettings);
+        saveAppSettings({ render: false });
+      }
       if (parsed.lastModified)
         console.log('Loaded compressed data last modified:', parsed.lastModified);
 
@@ -2085,7 +2255,8 @@ function checkPassword() {
         if (action === 'settings') {
             showSettingsOverlay();
         } else if (action === 'privateSetup') {
-            showPrivateSetupOverlay();
+            // v26: legacy Photo / Voice Setup route now opens the current editor-style content manager.
+            showManagementPanel();
         } else if (action === 'exportFullBackup') {
             exportFullAppBackup();
         } else if (action === 'importFullBackup') {
@@ -3806,7 +3977,6 @@ function renderCategoryMenuCards() {
 }
 
 function showMainMenu() {
-    renderCategoryMenuCards();
     const menu = document.querySelector('.tab-container');
     const header = document.getElementById('submenuHeader');
     const grid = document.getElementById('buttonGrid');
@@ -3819,12 +3989,24 @@ function showMainMenu() {
 
     if (messageBar) messageBar.classList.remove('submenu-titlebar');
     if (backToMenu) backToMenu.hidden = true;
-    if (menu) menu.hidden = false;
     if (header) header.hidden = true;
-    if (grid) {
-        grid.hidden = true;
-        grid.innerHTML = '';
-        grid.removeAttribute('data-category');
+
+    if (appSettings.displayMode === 'simple-list') {
+        if (menu) menu.hidden = true;
+        if (grid) {
+            grid.hidden = false;
+            renderSimpleVocabularyView(grid);
+        }
+    } else {
+        renderCategoryMenuCards();
+        if (menu) menu.hidden = false;
+        if (grid) {
+            grid.hidden = true;
+            grid.innerHTML = '';
+            grid.classList.remove('simple-vocabulary-list');
+            grid.removeAttribute('data-view');
+            grid.removeAttribute('data-category');
+        }
     }
 
     document.querySelectorAll('.tab').forEach(tab => {
@@ -3849,7 +4031,11 @@ function showCategorySubmenu(category) {
     if (backToMenu) backToMenu.hidden = false;
     if (menu) menu.hidden = true;
     if (header) header.hidden = true;
-    if (grid) grid.hidden = false;
+    if (grid) {
+        grid.hidden = false;
+        grid.classList.remove('simple-vocabulary-list');
+        grid.removeAttribute('data-view');
+    }
 
     document.querySelectorAll('.tab').forEach(tab => {
         const isActive = tab.getAttribute('data-category') === category;
@@ -3895,6 +4081,89 @@ function applyCategoryTheme(category) {
 }
 
 
+
+function applyCategoryThemeToElement(element, category) {
+    const meta = getCategoryMeta(category);
+    if (!element) return;
+    element.style.setProperty('--category-color', meta.colour);
+    element.style.setProperty('--category-dark', meta.dark);
+    element.style.setProperty('--category-soft', meta.soft);
+}
+
+function createPhraseButton(buttonInfo, category) {
+    const phraseForClick = { ...buttonInfo, category };
+    const button = document.createElement('button');
+    button.className = 'grid-button';
+    button.dataset.category = category;
+    if (buttonInfo.id) button.dataset.phraseId = buttonInfo.id;
+    applyCategoryThemeToElement(button, category);
+
+    const safeText = escapeHtml(buttonInfo.text || '');
+
+    if (category === 'MyPeople' && buttonInfo.relationship) {
+        const countdown = getBirthdayCountdown(buttonInfo.birthday);
+        const hasBirthdaySoon = buttonInfo.birthday && countdown !== '';
+        const safeRelationship = escapeHtml(buttonInfo.relationship || '');
+        const safeOccupation = escapeHtml(buttonInfo.occupation || '');
+        const safeCountdown = escapeHtml(countdown || '');
+
+        button.innerHTML = `
+            ${createButtonMediaHTML(buttonInfo, category, 'person-button-media')}
+            <span>${safeText}</span>
+            <div class="person-details">
+                <small>${safeRelationship}</small>
+                ${buttonInfo.occupation ? `<small class="occupation">${safeOccupation}</small>` : ''}
+                ${hasBirthdaySoon ? `<small class="countdown">🎂 ${safeCountdown}</small>` : ''}
+            </div>
+        `;
+    } else {
+        button.innerHTML = `
+            ${createButtonMediaHTML(buttonInfo, category)}
+            <span>${safeText}</span>
+        `;
+    }
+
+    attachPhraseActivation(button, phraseForClick);
+    applyPrivateImagesIn(button);
+    return button;
+}
+
+function renderSimpleVocabularyView(grid) {
+    if (!grid) return;
+    grid.innerHTML = '';
+    grid.removeAttribute('data-category');
+    grid.dataset.view = 'simple-list';
+    grid.classList.add('simple-vocabulary-list');
+
+    const categories = getCategoryOrder({ includeHidden: false });
+    let visiblePhraseCount = 0;
+
+    categories.forEach(category => {
+        const phrases = getDisplayPhrases(category);
+        if (!phrases.length) return;
+        const meta = getCategoryMeta(category);
+        const heading = document.createElement('div');
+        heading.className = 'simple-vocabulary-heading';
+        heading.style.setProperty('--category-color', meta.colour);
+        heading.style.setProperty('--category-dark', meta.dark);
+        heading.style.setProperty('--category-soft', meta.soft);
+        heading.innerHTML = `<span class="simple-heading-icon" aria-hidden="true">${escapeHtml(meta.icon)}</span><span>${escapeHtml(meta.label)}</span>`;
+        grid.appendChild(heading);
+
+        phrases.forEach(buttonInfo => {
+            grid.appendChild(createPhraseButton(buttonInfo, category));
+            visiblePhraseCount += 1;
+        });
+    });
+
+    if (!visiblePhraseCount) {
+        const empty = document.createElement('p');
+        empty.className = 'empty-category-message';
+        empty.textContent = 'No visible phrases are available.';
+        grid.appendChild(empty);
+    }
+}
+
 function populateGrid(category) {
     const grid = document.getElementById('buttonGrid');
     grid.innerHTML = '';
@@ -3912,61 +4181,16 @@ function populateGrid(category) {
         return;
     }
 
+    grid.removeAttribute('data-view');
+    grid.classList.remove('simple-vocabulary-list');
+
     buttons.forEach(buttonInfo => {
-        const phraseForClick = { ...buttonInfo, category };
-        const button = document.createElement('button');
-        button.className = 'grid-button';
-        button.dataset.category = category;
-        if (buttonInfo.id) button.dataset.phraseId = buttonInfo.id;
-
-        const safeText = escapeHtml(buttonInfo.text || '');
-
-        if (category === 'MyPeople' && buttonInfo.relationship) {
-            const countdown = getBirthdayCountdown(buttonInfo.birthday);
-            const hasBirthdaySoon = buttonInfo.birthday && countdown !== "";
-            const safeRelationship = escapeHtml(buttonInfo.relationship || '');
-            const safeOccupation = escapeHtml(buttonInfo.occupation || '');
-            const safeCountdown = escapeHtml(countdown || '');
-            
-            button.innerHTML = `
-                ${createButtonMediaHTML(buttonInfo, category, 'person-button-media')}
-                <span>${safeText}</span>
-                <div class="person-details">
-                    <small>${safeRelationship}</small>
-                    ${buttonInfo.occupation ? `<small class="occupation">${safeOccupation}</small>` : ''}
-                    ${hasBirthdaySoon ? `<small class="countdown">🎂 ${safeCountdown}</small>` : ''}
-                </div>
-            `;
-
-            button.addEventListener('click', function() {
-                speakPhrase(phraseForClick, this);
-            });
-        } else {
-            button.innerHTML = `
-                ${createButtonMediaHTML(buttonInfo, category)}
-                <span>${safeText}</span>
-            `;
-
-            button.addEventListener('click', function() {
-                speakPhrase(phraseForClick, this);
-            });
-        }
-
-        applyPrivateImagesIn(button);
-        grid.appendChild(button);
+        grid.appendChild(createPhraseButton(buttonInfo, category));
     });
 
     // === ACCESSIBILITY: KEYBOARD NAVIGATION ===
     const gridButtons = grid.querySelectorAll('.grid-button');
-    gridButtons.forEach(btn => {
-      btn.setAttribute('tabindex', '0');
-      btn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          btn.click();
-        }
-      });
-    });
+    gridButtons.forEach(btn => btn.setAttribute('tabindex', '0'));
 }
 
 function getZoomImageCandidates(buttonInfo) {
@@ -4964,6 +5188,7 @@ function exportButtonData() {
     const payload = {
       buttonData,
       categoryConfig: normaliseCategoryConfig(categoryConfig),
+      appSettings: normaliseAppSettings(appSettings),
       lastModified: new Date().toISOString()
     };
 
@@ -5014,6 +5239,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('MyNewVoice app initializing...');
     
     // Load saved data first
+    loadAppSettings();
     loadCategoryConfig();
     loadDataFromStorage();
     refreshPrivateVoiceKeyIndex().catch(error => console.warn('Could not build private voice index:', error));
@@ -5140,6 +5366,10 @@ document.body.dataset.theme = 'light';
           if (imported.categoryConfig) {
             categoryConfig = normaliseCategoryConfig(imported.categoryConfig);
             saveCategoryConfig();
+          }
+          if (imported.appSettings) {
+            appSettings = normaliseAppSettings(imported.appSettings);
+            saveAppSettings({ render: false });
           }
           saveDataToStorage();
           renderCategoryMenuCards();
