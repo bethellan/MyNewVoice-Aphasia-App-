@@ -26,6 +26,7 @@ v8_titlebar_back_button - Removed the redundant submenu header and moved the Mai
    v22_settings_visual_tidy - Appearance-only tidy for Settings and in-app editor panels; no behaviour or backup schema changes.
    v23_settings_entry_cleanup - Removed oversized content editor intro, added Back to Settings, and disabled opening resize animation.
    v24_content_editor_fullscreen_fix - Forced the in-app content editor to open directly as a true full-screen overlay.
+   v25_settings_navigation_refine - Settings now exits only from the main Settings menu; editor Save returns one level up.
 */
 
 // ============================================================================
@@ -729,7 +730,6 @@ function ensureSettingsOverlay() {
         <div class="settings-panel">
             <div class="settings-header">
                 <h3 id="settingsTitle">Settings</h3>
-                <button type="button" class="settings-close" data-settings-close aria-label="Close settings">×</button>
             </div>
             <div class="settings-actions settings-actions-compact">
                 <button type="button" class="settings-action-btn" data-open-management>✏️ Edit menus, phrases, pictures & voices</button>
@@ -740,6 +740,7 @@ function ensureSettingsOverlay() {
                 <input type="file" id="fullBackupImportFile" accept=".mnvoice,.json,application/json" hidden>
                 <button type="button" class="settings-action-btn" data-refresh-app-code>🔄 Refresh app code</button>
                 <button type="button" class="settings-action-btn" data-open-about>ℹ️ About MyNewVoice</button>
+                <button type="button" class="settings-action-btn return-app-settings-btn" data-settings-close>↩️ Return to App</button>
             </div>
             <p class="settings-note">Use the editor for menu text, phrase text, photos, and recordings. Complete backup preserves content, local photos, and recorded voices together. Remove all images/audio is permanent unless you have exported a complete backup first.</p>
         </div>
@@ -1579,7 +1580,7 @@ async function buildCompleteBackupPayload() {
         type: FULL_APP_BACKUP_TYPE,
         version: 1,
         exportedAt: new Date().toISOString(),
-        appVersion: 'v24',
+        appVersion: 'v25',
         buttonData,
         categoryConfig: normaliseCategoryConfig(categoryConfig),
         mediaRecords: exportRecords
@@ -2170,7 +2171,6 @@ function renderContentTopicsScreen(panel, allCategories) {
             <div class="compact-editor-title">
                 <h3 id="managementPanelTitle">Content Editor</h3>
             </div>
-            <button type="button" class="settings-close" data-content-close aria-label="Close content setup">×</button>
         </div>
 
         <div class="private-section-details editor-details open-editor-section">
@@ -2198,7 +2198,7 @@ function renderContentTopicsScreen(panel, allCategories) {
         </div>
 
         <div class="private-setup-footer editor-bottom-actions">
-            <button type="button" class="management-btn" data-content-close>Cancel</button>
+            <button type="button" class="management-btn" data-content-back-settings>Cancel</button>
             <button type="button" class="management-btn save-private-setup" data-content-save-close>✅ SAVE CHANGES</button>
         </div>
     `;
@@ -2212,7 +2212,6 @@ function renderContentPhraseScreen(panel, category) {
             <div class="compact-editor-title">
                 <h3 id="managementPanelTitle">${escapeHtml(meta.label)}</h3>
             </div>
-            <button type="button" class="settings-close" data-content-close aria-label="Close content setup">×</button>
         </div>
 
         <div class="private-section-details editor-details open-editor-section">
@@ -2393,7 +2392,13 @@ function handleContentManagementClick(event) {
     const target = event.target;
 
     if (target.closest('[data-content-close]')) {
-        hideManagementPanel();
+        if (contentEditorScreen === 'phrases') {
+            contentEditorScreen = 'topics';
+            renderContentManagementPanel();
+        } else {
+            hideManagementPanel();
+            showSettingsOverlay();
+        }
         return;
     }
     if (target.closest('[data-content-back-settings]')) {
@@ -2403,9 +2408,16 @@ function handleContentManagementClick(event) {
     }
 
     if (target.closest('[data-content-save-close]')) {
-        hideManagementPanel();
-        showMainMenu();
-        showToast('Content setup saved', 'success');
+        if (contentEditorScreen === 'phrases') {
+            contentEditorScreen = 'topics';
+            contentSetupSelected = { type: 'category', category: contentSetupPhraseCategory };
+            renderContentManagementPanel();
+            showToast('Phrase changes saved', 'success');
+        } else {
+            hideManagementPanel();
+            showSettingsOverlay();
+            showToast('Content changes saved', 'success');
+        }
         return;
     }
 

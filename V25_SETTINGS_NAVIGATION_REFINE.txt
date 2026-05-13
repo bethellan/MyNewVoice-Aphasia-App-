@@ -1,0 +1,16 @@
+MyNewVoice v25 - Settings Navigation Refine
+
+Changes:
+- Added Return to App button on the main Settings menu.
+- Settings now exits to the app only from the main Settings menu.
+- Content editor Save returns one level up instead of closing the whole settings flow.
+- Phrase editor Save returns to the main topics editor.
+- Topics editor Save returns to Settings.
+- Cancel/back actions return one level up.
+
+Preserved:
+- Backup/export schema.
+- Local images/audio.
+- Dad-facing layout.
+- Speech fallback.
+- Custom category support.

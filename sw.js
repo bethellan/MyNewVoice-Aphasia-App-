@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v24_content_editor_fullscreen_fix: forces content editor to open full screen; preserves behaviour, local media, and backup schema.
-const CACHE_NAME = 'mynewvoice-v24-content-editor-fullscreen-fix';
+// v25_settings_navigation_refine: settings exits only from main Settings menu; editor Save returns one level up.
+const CACHE_NAME = 'mynewvoice-v25-settings-navigation-refine';
 const urlsToCache = [
   './',
   './index.html',
