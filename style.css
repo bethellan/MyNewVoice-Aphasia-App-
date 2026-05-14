@@ -57,6 +57,62 @@ Created by Andrew Bethell in his own time for his father following a stroke.
   padding: 0;
 }
 
+
+/* v28: Mobile touch interaction lock for hold-to-speak.
+   Prevents text selection, iOS callout menus, tap highlights and image dragging on the app surface.
+   Do not use touch-action:none here; scrolling must remain available. */
+.container,
+#messageBar,
+.tab-container,
+.tab,
+.menu-card-title,
+.menu-card-image-shell,
+.menu-card-fallback,
+#buttonGrid,
+.grid,
+.grid-button,
+.grid-button .button-media,
+.grid-button > span,
+.button-fallback-icon,
+.simple-section-heading,
+.management-thumb,
+.management-table,
+.editor-style-header {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.container img,
+.tab img,
+.menu-card-image-shell img,
+.grid-button img,
+.grid-button .button-media img,
+.button-media img,
+.management-thumb img,
+.phrase-popup img,
+.phrase-popup-image img {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+  pointer-events: none;
+}
+
+.container input,
+.container textarea,
+.container select,
+.container [contenteditable="true"],
+.container [contenteditable=""] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+  touch-action: auto;
+}
+
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
@@ -3013,4 +3069,253 @@ body:not(.submenu-open) #messageBar {
   font-size: 0.85rem;
   font-weight: 900;
   pointer-events: none;
+}
+
+/* v29: Voice status indicator in phrase editor. */
+.voice-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 104px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+    border: 1px solid rgba(15, 23, 42, 0.14);
+}
+
+.voice-status-badge.voice-saved {
+    color: #14532d;
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.voice-status-badge.voice-none {
+    color: #475569;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.voice-buttons .voice-status-badge {
+    margin-bottom: 4px;
+}
+
+
+/* ============================================================================
+   v30A professional visual polish only
+   Safe styling pass: tactile pressed states, consistent shadows/colours,
+   clearer Settings grouping and table readability. No behaviour/schema changes.
+   ============================================================================ */
+:root {
+  --surface-card: #ffffff;
+  --surface-soft: #f8fbff;
+  --border-soft: #d8e1ee;
+  --shadow-soft: 0 8px 22px rgba(15, 23, 42, 0.08);
+  --shadow-card: 0 12px 28px rgba(15, 23, 42, 0.11);
+  --shadow-press: inset 0 4px 10px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.10);
+  --focus-ring: 0 0 0 4px rgba(33, 150, 243, 0.22);
+}
+
+/* General tactile feedback for real buttons and app controls. */
+button,
+.settings-action-btn,
+.management-btn,
+.small-management-btn,
+.management-add-line,
+.back-to-menu,
+.settings-close,
+.fallback-icon-choice {
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+button:active,
+.settings-action-btn:active,
+.management-btn:active,
+.small-management-btn:active,
+.management-add-line:active,
+.back-to-menu:active,
+.settings-close:active,
+.fallback-icon-choice:active {
+  transform: translateY(2px) scale(0.992);
+  box-shadow: var(--shadow-press);
+  filter: brightness(0.98);
+}
+
+/* Main menu cards: same structure, cleaner card finish and pressed feel. */
+.tab-container {
+  background: linear-gradient(135deg, #f8fbff, #edf3f8);
+  border-color: var(--border-soft);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.75), var(--shadow-soft);
+}
+
+.tab {
+  background: var(--surface-card);
+  box-shadow: var(--shadow-soft);
+  border-color: var(--tab-color, #4CAF50);
+}
+
+.tab:hover:not(.active),
+.tab:hover {
+  box-shadow: var(--shadow-card);
+}
+
+.tab:active {
+  transform: translateY(2px) scale(0.996);
+  box-shadow: var(--shadow-press);
+}
+
+.menu-card-title {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+}
+
+.menu-card-image-shell {
+  background: linear-gradient(135deg, var(--tab-soft, #f8f9fa), #ffffff 65%, #f3f7fc);
+}
+
+.tab:focus-visible,
+.grid-button:focus-visible,
+.settings-action-btn:focus-visible,
+.management-btn:focus-visible,
+.small-management-btn:focus-visible,
+.management-media-thumb:focus-visible,
+.back-to-menu:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring), var(--shadow-card);
+}
+
+/* Phrase rows: preserve size/layout, improve tactile confidence. */
+.grid-button {
+  background: linear-gradient(90deg, var(--category-soft), #ffffff 62%, #f9fbff);
+  box-shadow: var(--shadow-soft);
+}
+
+.grid-button:hover {
+  box-shadow: var(--shadow-card);
+}
+
+.grid-button:active,
+.grid-button.press-waiting {
+  transform: translateY(2px) scale(0.996);
+  box-shadow: var(--shadow-press);
+  border-color: var(--category-dark);
+}
+
+.grid-button:active img,
+.grid-button.press-waiting img {
+  transform: scale(1.01);
+}
+
+.button-media,
+.grid-button .button-media,
+.management-media-thumb {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.65), 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+/* Popup polish: no workflow changes. */
+.phrase-popup-card {
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+  border: 1px solid rgba(255,255,255,0.72);
+}
+
+/* Settings: clearer admin grouping with existing buttons only. */
+.settings-panel {
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.settings-actions,
+.settings-actions-compact {
+  gap: 12px;
+}
+
+.settings-action-btn {
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+  border: 1px solid var(--border-soft);
+  border-left: 6px solid var(--primary-color, #4CAF50);
+  color: #172033;
+  box-shadow: var(--shadow-soft);
+}
+
+.settings-action-btn:hover,
+.settings-action-btn:focus {
+  border-color: #9bc5a4;
+  border-left-color: var(--primary-dark, #2f7d32);
+  box-shadow: var(--shadow-card);
+}
+
+.danger-settings-btn,
+.settings-actions-compact .danger-settings-btn {
+  border-left-color: #dc2626 !important;
+}
+
+/* Content editor tables: readability and professional finish only. */
+.editor-table-wrap {
+  border-color: var(--border-soft);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.85), var(--shadow-soft);
+}
+
+.management-editor-table th {
+  background: linear-gradient(180deg, #f8fbff, #eef5ff);
+  color: #23344f;
+}
+
+.management-editor-table td {
+  background-clip: padding-box;
+}
+
+.management-topic-row:hover,
+.management-phrase-row:hover {
+  background: #f2f8ff;
+}
+
+.management-topic-row:focus-within,
+.management-phrase-row:focus-within {
+  outline: 3px solid rgba(33,150,243,0.16);
+  outline-offset: -3px;
+}
+
+.management-media-thumb {
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffffff, #edf8ff);
+}
+
+.management-media-thumb:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: var(--shadow-press);
+}
+
+.management-btn,
+.small-management-btn,
+.management-add-line {
+  box-shadow: var(--shadow-soft);
+}
+
+.management-btn:hover,
+.small-management-btn:hover,
+.management-add-line:hover {
+  box-shadow: var(--shadow-card);
+}
+
+.editor-bottom-actions {
+  box-shadow: 0 -8px 26px rgba(15,23,42,.10);
+}
+
+.voice-status-badge {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab,
+  .grid-button,
+  button,
+  .settings-action-btn,
+  .management-btn,
+  .small-management-btn,
+  .management-add-line,
+  .management-media-thumb,
+  .menu-card-image-shell img,
+  .grid-button img {
+    transition: none !important;
+  }
 }

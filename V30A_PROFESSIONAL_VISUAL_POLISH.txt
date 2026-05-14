@@ -1,0 +1,14 @@
+MyNewVoice v30A - Professional visual polish only
+
+Changes:
+- Added tactile button press/depress states for main menu cards, phrase rows, Settings buttons, editor buttons and picture boxes.
+- Made shadows, card borders, table rows and Settings/editor visual grouping more consistent.
+- Improved table readability and focus/active states without changing layout structure.
+
+Deliberately unchanged:
+- Dad-facing layout structure.
+- Phrase/category/media IDs and storage keys.
+- Backup/export/import schema.
+- Speech behaviour and recorded voice fallback.
+- Local image/audio storage.
+- Settings navigation and editor workflow.

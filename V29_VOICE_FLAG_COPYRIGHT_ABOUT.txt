@@ -1,0 +1,17 @@
+MyNewVoice v29 - Voice Flag and Copyright About Update
+
+Changes:
+- Added a visible voice status badge in the phrase editor rows.
+- Badge shows "🎙️ Voice saved" when a recorded voice exists for a phrase.
+- Badge shows "Voice: none" when no recorded voice exists and the phrase will use device speech.
+- Added Copyright © Andrew Bethell. All rights reserved. to the About box.
+- Added an HTML body comment with Andrew Bethell copyright/authorship wording.
+- Updated service-worker cache/version references to v29.
+
+Preserved:
+- Backup/export/import schema.
+- Phrase/category/media IDs and storage keys.
+- Dad-facing communication layout.
+- Speech fallback behaviour.
+- Local photo/audio storage.
+- Settings navigation and editor workflow.

@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v27_simple_vocabulary_and_press_delay: added optional simple vocabulary list and configurable press duration.
-const CACHE_NAME = 'mynewvoice-v27-simple-vocabulary-press-delay';
+// v30a_professional_visual_polish: tactile button states and styling polish only; no schema or behaviour changes.
+const CACHE_NAME = 'mynewvoice-v30a-professional-visual-polish';
 const urlsToCache = [
   './',
   './index.html',

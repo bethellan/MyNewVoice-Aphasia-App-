@@ -1,0 +1,16 @@
+MyNewVoice v28 - Mobile Touch Interaction Lock
+
+Small permanent touch-interaction fix for hold-to-speak on iOS and Android.
+
+Changes:
+- Added CSS to suppress text selection, iOS touch callout, tap highlight, and image dragging on app buttons/cards/phrase rows/images.
+- Added installTouchInteractionLock() startup helper.
+- The helper blocks contextmenu, selectstart, and dragstart inside the app root, while allowing normal text entry fields.
+- Used touch-action: manipulation on app controls; did not add touch-action: none to communication surfaces so scrolling remains available.
+- Confirmed existing hold-to-speak logic uses pointerdown, pointerup, pointercancel, and pointerleave.
+
+Unchanged:
+- Backup/export/import schema.
+- Phrase/category/media IDs and storage keys.
+- Dad-facing layout and phrases.
+- Speech behaviour, local images/audio, and settings data.

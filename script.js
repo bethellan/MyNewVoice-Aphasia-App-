@@ -29,6 +29,8 @@ v8_titlebar_back_button - Removed the redundant submenu header and moved the Mai
    v25_settings_navigation_refine - Settings now exits only from the main Settings menu; editor Save returns one level up.
    v26_stabilised_codebase - Stabilised settings/import/media handlers, removed duplicate backup-import hooks, and integrated patch behaviour without changing the backup schema.
    v27_simple_vocabulary_and_press_delay - Added optional simple vocabulary list view and configurable normal/long/longer press activation, saved locally and in complete backups as optional appSettings.
+   v28_mobile_touch_interaction_lock - Prevented mobile text selection, callout/context menus, and image dragging during hold-to-speak while preserving scrolling.
+   v30a_professional_visual_polish - Safe visual polish only: tactile button states, cleaner shadows/colours and editor readability.
 */
 
 // ============================================================================
@@ -1378,6 +1380,7 @@ async function deletePrivateMediaFromSetup(key) {
 }
 
 async function refreshAfterPrivateMediaChange() {
+    await refreshPrivateVoiceKeyIndex();
     renderCategoryMenuCards();
     const grid = document.getElementById('buttonGrid');
     if (grid && !grid.hidden && grid.dataset.category) populateGrid(grid.dataset.category);
@@ -1604,7 +1607,7 @@ async function buildCompleteBackupPayload() {
         type: FULL_APP_BACKUP_TYPE,
         version: 1,
         exportedAt: new Date().toISOString(),
-        appVersion: 'v27',
+        appVersion: 'v30A',
         buttonData,
         appSettings: normaliseAppSettings(appSettings),
         categoryConfig: normaliseCategoryConfig(categoryConfig),
@@ -1792,6 +1795,26 @@ function cancelPendingPhrasePress() {
         activePressButton.removeAttribute('data-hold-label');
         activePressButton = null;
     }
+}
+
+
+function installTouchInteractionLock() {
+    const appRoot = document.querySelector('.container');
+    if (!appRoot || appRoot.dataset.touchInteractionLockInstalled === 'true') return;
+    appRoot.dataset.touchInteractionLockInstalled = 'true';
+
+    const isEditableTarget = (target) => Boolean(target && target.closest && target.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'));
+    const isInsideAppRoot = (target) => Boolean(target && appRoot.contains(target));
+
+    const blockAppGesture = (event) => {
+        if (!isInsideAppRoot(event.target)) return;
+        if (isEditableTarget(event.target)) return;
+        event.preventDefault();
+    };
+
+    appRoot.addEventListener('contextmenu', blockAppGesture, true);
+    appRoot.addEventListener('selectstart', blockAppGesture, true);
+    appRoot.addEventListener('dragstart', blockAppGesture, true);
 }
 
 function attachPhraseActivation(button, buttonInfo) {
@@ -2459,6 +2482,15 @@ function renderContentCategoryRows(allCategories) {
     }).join('') || '<tr><td colspan="7">No topics found.</td></tr>';
 }
 
+function renderVoiceStatusBadge(voiceKey) {
+    const hasVoice = Boolean(voiceKey && privateVoiceKeySet.has(voiceKey));
+    return `
+        <span class="voice-status-badge ${hasVoice ? 'voice-saved' : 'voice-none'}" title="${hasVoice ? 'A recorded voice is saved for this phrase.' : 'No recorded voice is saved; device speech will be used.'}">
+            ${hasVoice ? '🎙️ Voice saved' : 'Voice: none'}
+        </span>
+    `;
+}
+
 function renderContentPhraseRows(category, phrases) {
     const people = category === 'MyPeople';
     return phrases.map((phrase, index) => {
@@ -2477,6 +2509,7 @@ function renderContentPhraseRows(category, phrases) {
                     <button type="button" class="management-btn small-management-btn" data-icon-menu data-kind="phrase" data-category="${escapeHtml(category)}" data-id="${escapeHtml(phrase.id || '')}">Choose</button>
                 </td>
                 <td class="table-button-stack voice-buttons">
+                    ${renderVoiceStatusBadge(voiceKey)}
                     <button type="button" class="management-btn small-management-btn" data-record-voice data-key="${escapeHtml(voiceKey)}" data-text="${escapeHtml(phrase.text || '')}">🎙️ Record</button>
                     <button type="button" class="management-btn small-management-btn" data-play-voice data-key="${escapeHtml(voiceKey)}">▶️ Play</button>
                     <button type="button" class="management-btn remove-btn small-management-btn" data-delete-media data-key="${escapeHtml(voiceKey)}">Delete</button>
@@ -5237,6 +5270,7 @@ if ('serviceWorker' in navigator) {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('MyNewVoice app initializing...');
+    installTouchInteractionLock();
     
     // Load saved data first
     loadAppSettings();
