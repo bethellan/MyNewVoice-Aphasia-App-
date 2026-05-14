@@ -33,6 +33,8 @@ v8_titlebar_back_button - Removed the redundant submenu header and moved the Mai
    v30a_professional_visual_polish - Safe visual polish only: tactile button states, cleaner shadows/colours and editor readability.
    v32_settings_editor_polish - Visual-only polish for Settings and Content Editor; no behaviour/schema changes.
    v33_intro_button_popup_delay - Added configurable popup delay and optional introduction button saved as optional appSettings/media records.
+   v34_intro_button_fix - Fixed introduction header photo/icon display and made introduction button work reliably with photo-only setups.
+   v35_intro_header_photo_only - When an intro photo exists, show only a larger centred photo in a compact outlined header button.
 */
 
 // ============================================================================
@@ -74,7 +76,7 @@ const PRIVATE_MEDIA_DB_VERSION = 1;
 const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
-const CURRENT_APP_VERSION = 'v33';
+const CURRENT_APP_VERSION = 'v35';
 const PRIVATE_IMAGE_MAX_SIZE = 900;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.82;
 const PRIVATE_CROP_OUTPUTS = {
@@ -2037,19 +2039,38 @@ function playIntroductionFromSettings() {
     playIntroduction({ text });
 }
 
-async function playIntroduction(options = {}) {
+function playIntroduction(options = {}) {
     const intro = getIntroductionSettings();
     const text = String(options.text || intro.text || '').trim();
     const popupToken = showPhrasePopup({ id: INTRODUCTION_ITEM_ID, text, isIntroduction: true });
     const fakeButtonInfo = { id: INTRODUCTION_ITEM_ID, text };
-    const playedPrivateVoice = await playPrivateVoiceForPhrase(fakeButtonInfo, null, popupToken);
-    if (!playedPrivateVoice) speakText(text, null, { popupToken, showPopup: false });
+
+    // Keep generated speech inside the original tap/click path when no saved
+    // introduction recording is known. This mirrors phrase-button behaviour and
+    // avoids mobile browsers dropping text-to-speech after an async media lookup.
+    if (!hasKnownPrivateVoice(fakeButtonInfo)) {
+        if (text) {
+            speakText(text, null, { popupToken, showPopup: false });
+        } else {
+            // Photo/icon-only introduction: still show the popup briefly.
+            closePhrasePopupAfterMinimum(popupToken);
+        }
+        return;
+    }
+
+    playPrivateVoiceForPhrase(fakeButtonInfo, null, popupToken).then(playedPrivateVoice => {
+        if (!playedPrivateVoice) {
+            if (text) speakText(text, null, { popupToken, showPopup: false });
+            else closePhrasePopupAfterMinimum(popupToken);
+        }
+    });
 }
 
 async function renderIntroductionHeaderButton() {
     const messageBar = document.getElementById('messageBar');
     const messageText = document.getElementById('messageBarText');
     if (!messageBar || !messageText) return;
+
     let button = document.getElementById('introductionHeaderButton');
     const intro = getIntroductionSettings();
     if (!intro.enabled) {
@@ -2058,6 +2079,7 @@ async function renderIntroductionHeaderButton() {
         messageText.textContent = MAIN_MENU_PROMPT;
         return;
     }
+
     if (!button) {
         button = document.createElement('button');
         button.id = 'introductionHeaderButton';
@@ -2065,27 +2087,70 @@ async function renderIntroductionHeaderButton() {
         button.className = 'introduction-header-button';
         button.setAttribute('aria-label', 'Play introduction');
         button.innerHTML = '<img alt="" class="introduction-header-image"><span class="introduction-header-fallback" aria-hidden="true"></span><span class="introduction-header-text">Introduction</span>';
-        button.addEventListener('click', () => playIntroduction());
         messageBar.appendChild(button);
     }
+
+    // Assign directly on every render so the handler cannot become stale after
+    // settings changes or header re-renders.
+    button.onclick = (event) => {
+        event.preventDefault();
+        playIntroduction();
+    };
+
     messageText.hidden = true;
     button.hidden = false;
+
     const fallback = button.querySelector('.introduction-header-fallback');
     const img = button.querySelector('.introduction-header-image');
-    if (fallback) fallback.textContent = intro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon;
+    const textSpan = button.querySelector('.introduction-header-text');
+    button.classList.remove('photo-only');
+    if (fallback) {
+        fallback.textContent = intro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon;
+        fallback.hidden = true;
+    }
+    if (textSpan) {
+        textSpan.hidden = false;
+        textSpan.textContent = 'Introduction';
+    }
     if (img) {
+        img.onload = null;
+        img.onerror = null;
         img.style.display = 'none';
         img.removeAttribute('src');
-        const url = await getPrivateMediaObjectUrl(INTRODUCTION_IMAGE_KEY);
-        if (url) {
-            img.onload = () => { img.style.display = 'block'; if (fallback) fallback.hidden = true; };
-            img.onerror = () => { img.style.display = 'none'; if (fallback) fallback.hidden = false; };
-            img.src = url;
-        } else if (fallback) {
-            fallback.hidden = false;
-        }
+    }
+
+    const url = await getPrivateMediaObjectUrl(INTRODUCTION_IMAGE_KEY);
+    if (url && img) {
+        // If a photo exists, the main header becomes a compact photo-only
+        // introduction button: no fallback icon and no Introduction text.
+        if (fallback) fallback.hidden = true;
+        if (textSpan) textSpan.hidden = true;
+        button.classList.add('photo-only');
+        img.onload = () => {
+            img.onload = null;
+            img.onerror = null;
+            img.style.display = 'block';
+            if (fallback) fallback.hidden = true;
+            if (textSpan) textSpan.hidden = true;
+            button.classList.add('photo-only');
+        };
+        img.onerror = () => {
+            img.onload = null;
+            img.onerror = null;
+            img.style.display = 'none';
+            button.classList.remove('photo-only');
+            if (fallback) fallback.hidden = false;
+            if (textSpan) textSpan.hidden = false;
+        };
+        img.src = url;
+    } else {
+        // If no photo exists, keep the fallback introduction label/icon.
+        button.classList.remove('photo-only');
+        if (fallback) fallback.hidden = false;
+        if (textSpan) textSpan.hidden = false;
     }
 }
+
 
 function hideIntroductionHeaderButton() {
     const button = document.getElementById('introductionHeaderButton');

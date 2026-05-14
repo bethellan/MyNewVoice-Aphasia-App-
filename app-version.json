@@ -1,6 +1,6 @@
 {
-  "appVersion": "v33",
+  "appVersion": "v35",
   "updatedAt": "2026-05-14",
-  "label": "Introduction button and popup delay",
-  "notes": "Adds optional introduction button and configurable popup close delay; protected backup schema unchanged."
+  "label": "Introduction button fix",
+  "notes": "Fixes introduction header photo/icon display and makes the introduction button work reliably with photo-only setups; protected backup schema unchanged."
 }

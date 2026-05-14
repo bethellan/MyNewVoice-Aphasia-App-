@@ -1,0 +1,15 @@
+MyNewVoice v34 - Introduction button fix
+
+Changes:
+- If an introduction photo exists, the main header introduction button shows the photo only.
+- If no introduction photo exists, the fallback icon is shown.
+- Reattached the introduction button handler safely on each render.
+- Introduction button now opens the popup even when only a photo/icon is present and no text/audio is saved.
+- Text-to-speech for introduction text stays synchronous when no saved recording exists, matching phrase-button fallback behaviour.
+
+Unchanged:
+- Backup/export schema.
+- appSettings structure.
+- mediaRecords structure.
+- Phrase/category/media IDs and storage keys.
+- Dad-facing phrase rows and normal speech behaviour.

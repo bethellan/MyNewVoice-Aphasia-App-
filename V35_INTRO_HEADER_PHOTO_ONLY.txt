@@ -1,0 +1,8 @@
+MyNewVoice v35 - Introduction Header Photo Only
+
+Changes:
+- When the introduction feature is enabled and an introduction photo exists, the main menu title bar shows only a larger centred photo.
+- Removed the fallback icon and the word Introduction from the header in photo-present mode.
+- Made the photo header button compact, with even padding around the photo.
+- Preserved fallback icon/text behaviour when no introduction photo exists.
+- No backup/export schema changes.

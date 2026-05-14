@@ -4,8 +4,8 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v33_intro_button_popup_delay: optional introduction button and popup delay; protected backup schema unchanged.
-const CACHE_NAME = 'mynewvoice-v33-intro-button-popup-delay';
+// v35_intro_header_photo_only: compact centred photo-only introduction header when an intro photo exists; protected backup schema unchanged.
+const CACHE_NAME = 'mynewvoice-v35-intro-header-photo-only';
 const urlsToCache = [
   './',
   './index.html',
