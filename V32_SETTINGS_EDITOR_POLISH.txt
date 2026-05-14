@@ -1,0 +1,19 @@
+MyNewVoice v32 - Settings and Content Editor professional polish
+
+Carer-facing visual refinement only.
+
+Changes:
+- Grouped Settings dashboard cards.
+- Smaller, cleaner Settings icons and chevrons.
+- Clearer Backup, Maintenance/Edit, Danger Zone and About/Exit areas.
+- Cleaner topic and phrase editor tables.
+- More compact row action buttons.
+- Improved voice/status badge spacing and table readability.
+
+Deliberately unchanged:
+- Dad-facing communication screens.
+- Phrase/category/media IDs.
+- Local images and audio storage.
+- Speech behaviour.
+- Backup/export/import schema.
+- Import/export logic.

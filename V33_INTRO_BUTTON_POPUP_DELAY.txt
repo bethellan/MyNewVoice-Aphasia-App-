@@ -1,0 +1,7 @@
+MyNewVoice v33 - Introduction button and popup delay
+
+- Added Settings slider for popup close delay after speech, 1-5 seconds.
+- Added optional introduction button on the main title bar when enabled in Settings.
+- Introduction text/icon are stored as optional appSettings.
+- Introduction picture/audio are stored in existing local media records.
+- Protected backup fields and existing schema remain unchanged.

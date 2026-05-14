@@ -31,6 +31,8 @@ v8_titlebar_back_button - Removed the redundant submenu header and moved the Mai
    v27_simple_vocabulary_and_press_delay - Added optional simple vocabulary list view and configurable normal/long/longer press activation, saved locally and in complete backups as optional appSettings.
    v28_mobile_touch_interaction_lock - Prevented mobile text selection, callout/context menus, and image dragging during hold-to-speak while preserving scrolling.
    v30a_professional_visual_polish - Safe visual polish only: tactile button states, cleaner shadows/colours and editor readability.
+   v32_settings_editor_polish - Visual-only polish for Settings and Content Editor; no behaviour/schema changes.
+   v33_intro_button_popup_delay - Added configurable popup delay and optional introduction button saved as optional appSettings/media records.
 */
 
 // ============================================================================
@@ -43,6 +45,9 @@ const APP_SETTINGS_KEY = 'mynewvoice_app_settings_v27';
 const MANAGEMENT_PASSWORD = "19Hector";
 const DEFAULT_IMAGE = '';
 const MAIN_MENU_PROMPT = 'Select a button to speak...';
+const INTRODUCTION_ITEM_ID = 'introduction';
+const INTRODUCTION_IMAGE_KEY = 'intro:image';
+const INTRODUCTION_VOICE_KEY = 'voice:introduction';
 const CLICK_SOUND = new Audio('assets/sounds/click.mp3');
 CLICK_SOUND.volume = 0.3; // keep it gentle
 
@@ -69,6 +74,7 @@ const PRIVATE_MEDIA_DB_VERSION = 1;
 const PRIVATE_MEDIA_STORE = 'media';
 const PRIVATE_MEDIA_BACKUP_TYPE = 'mynewvoice-private-media-backup';
 const FULL_APP_BACKUP_TYPE = 'mynewvoice-complete-backup';
+const CURRENT_APP_VERSION = 'v33';
 const PRIVATE_IMAGE_MAX_SIZE = 900;
 const PRIVATE_IMAGE_JPEG_QUALITY = 0.82;
 const PRIVATE_CROP_OUTPUTS = {
@@ -743,19 +749,80 @@ function ensureSettingsOverlay() {
                     <option value="longer">Longer press to speak</option>
                 </select>
                 <p class="settings-help">Use long press if accidental swipes or brushes trigger phrase buttons.</p>
+                <label for="settingsPopupCloseDelay">Popup close delay after speech: <span id="settingsPopupCloseDelayValue">2 seconds</span></label>
+                <input id="settingsPopupCloseDelay" class="settings-range" type="range" min="1" max="5" step="1" value="2">
+                <p class="settings-help">Choose how long the spoken phrase picture/text stays open after speech finishes.</p>
+                <label for="settingsIntroductionEnabled">Introduction button</label>
+                <select id="settingsIntroductionEnabled" class="settings-select">
+                    <option value="off">Off - show the normal title</option>
+                    <option value="on">On - show introduction button on main screen</option>
+                </select>
+                <div id="introductionSettingsPanel" class="introduction-settings-panel" hidden>
+                    <p class="settings-help">Set the introduction shown and spoken from the main screen header.</p>
+                    <label for="settingsIntroductionText">Introduction text</label>
+                    <textarea id="settingsIntroductionText" class="settings-textarea" maxlength="500" placeholder="Hello, my name is... Please give me time."></textarea>
+                    <label for="settingsIntroductionIcon">Default icon if no picture is chosen</label>
+                    <div class="introduction-inline-actions">
+                        <input id="settingsIntroductionIcon" class="settings-icon-input" maxlength="4" value="👋">
+                        <button type="button" class="management-btn small-management-btn" data-intro-icon-menu>Choose icon</button>
+                    </div>
+                    <div class="introduction-inline-actions introduction-media-actions">
+                        <button type="button" class="management-btn small-management-btn" data-intro-image-options>Picture</button>
+                        <button type="button" class="management-btn small-management-btn" data-intro-record>Record / re-record audio</button>
+                        <button type="button" class="management-btn small-management-btn" data-intro-play>Play audio</button>
+                        <button type="button" class="management-btn remove-btn small-management-btn" data-intro-delete-audio>Delete audio</button>
+                    </div>
+                    <div class="introduction-save-row">
+                        <button type="button" class="management-btn close-btn" data-intro-cancel>Cancel</button>
+                        <button type="button" class="management-btn" data-intro-save>Save introduction</button>
+                    </div>
+                </div>
+                <label for="settingsAutoUpdateCheck">Automatic update check</label>
+                <select id="settingsAutoUpdateCheck" class="settings-select">
+                    <option value="off">Off - update manually</option>
+                    <option value="on">On - check the website for a newer app</option>
+                </select>
+                <p class="settings-help">Checks for newer MyNewVoice app files from the website. Saved phrases, pictures, and voice recordings are kept.</p>
             </div>
-            <div class="settings-actions settings-actions-compact">
-                <button type="button" class="settings-action-btn" data-open-management>✏️ Edit menus, phrases, pictures & voices</button>
-                <button type="button" class="settings-action-btn" data-export-full-backup>📥 Export complete backup</button>
-                <button type="button" class="settings-action-btn" data-import-full-backup>📤 Import complete backup</button>
-                <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-images>🗑️ Remove all images</button>
-                <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-audio>🗑️ Remove all audio</button>
-                <input type="file" id="fullBackupImportFile" accept=".mnvoice,.json,application/json" hidden>
-                <button type="button" class="settings-action-btn" data-refresh-app-code>🔄 Refresh app code</button>
-                <button type="button" class="settings-action-btn" data-open-about>ℹ️ About MyNewVoice</button>
-                <button type="button" class="settings-action-btn return-app-settings-btn" data-settings-close>↩️ Return to App</button>
+            <div class="settings-dashboard" aria-label="Settings dashboard">
+                <section class="settings-group settings-group-display">
+                    <h4>Display and interaction</h4>
+                    <div class="settings-actions settings-actions-compact">
+                        <button type="button" class="settings-action-btn" data-check-app-update><span class="settings-card-icon" aria-hidden="true">↻</span><span class="settings-card-text"><strong>Check for updates</strong><small>Look for a newer website version.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                        <button type="button" class="settings-action-btn" data-refresh-app-code><span class="settings-card-icon" aria-hidden="true">⟳</span><span class="settings-card-text"><strong>Refresh app code</strong><small>Reload app files while keeping saved content.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                    </div>
+                </section>
+                <section class="settings-group settings-group-edit">
+                    <h4>Edit content</h4>
+                    <div class="settings-actions settings-actions-compact">
+                        <button type="button" class="settings-action-btn settings-action-prominent" data-open-management><span class="settings-card-icon" aria-hidden="true">✎</span><span class="settings-card-text"><strong>Edit menus, phrases, pictures and voices</strong><small>Manage the words, images and recordings.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                    </div>
+                </section>
+                <section class="settings-group settings-group-backup">
+                    <h4>Backup and restore</h4>
+                    <div class="settings-actions settings-actions-compact">
+                        <button type="button" class="settings-action-btn" data-export-full-backup><span class="settings-card-icon" aria-hidden="true">⇩</span><span class="settings-card-text"><strong>Export complete backup</strong><small>Save phrases, pictures and recordings.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                        <button type="button" class="settings-action-btn" data-import-full-backup><span class="settings-card-icon" aria-hidden="true">⇧</span><span class="settings-card-text"><strong>Import complete backup</strong><small>Load a saved MyNewVoice backup.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                        <input type="file" id="fullBackupImportFile" accept=".mnvoice,.json,application/json" hidden>
+                    </div>
+                </section>
+                <section class="settings-group settings-group-danger">
+                    <h4>Danger zone</h4>
+                    <p class="settings-group-note">These actions permanently remove local content unless you have exported a complete backup first.</p>
+                    <div class="settings-actions settings-actions-compact">
+                        <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-images><span class="settings-card-icon" aria-hidden="true">⌧</span><span class="settings-card-text"><strong>Remove all images</strong><small>Delete local saved pictures only.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                        <button type="button" class="settings-action-btn danger-settings-btn" data-clear-all-audio><span class="settings-card-icon" aria-hidden="true">⌧</span><span class="settings-card-text"><strong>Remove all audio</strong><small>Delete local recorded voices only.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                    </div>
+                </section>
+                <section class="settings-group settings-group-about">
+                    <h4>About and exit</h4>
+                    <div class="settings-actions settings-actions-compact">
+                        <button type="button" class="settings-action-btn" data-open-about><span class="settings-card-icon" aria-hidden="true">i</span><span class="settings-card-text"><strong>About MyNewVoice</strong><small>Copyright and project information.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                        <button type="button" class="settings-action-btn return-app-settings-btn" data-settings-close><span class="settings-card-icon" aria-hidden="true">↩</span><span class="settings-card-text"><strong>Return to App</strong><small>Close Settings and go back.</small></span><span class="settings-card-chevron" aria-hidden="true">›</span></button>
+                    </div>
+                </section>
             </div>
-            <p class="settings-note">Use the editor for menu text, phrase text, photos, and recordings. Complete backup preserves content, local photos, and recorded voices together. Remove all images/audio is permanent unless you have exported a complete backup first.</p>
+            <p class="settings-note">Complete backup preserves content, local photos, and recorded voices together.</p>
         </div>
     `;
 
@@ -784,8 +851,42 @@ function ensureSettingsOverlay() {
             confirmAndClearAllAudio();
             return;
         }
+        if (event.target.closest('[data-check-app-update]')) {
+            checkForAppUpdate({ manual: true });
+            return;
+        }
         if (event.target.closest('[data-refresh-app-code]')) {
             refreshAppCodeSafely();
+            return;
+        }
+        if (event.target.closest('[data-intro-image-options]')) {
+            showIntroductionImageOptions();
+            return;
+        }
+        if (event.target.closest('[data-intro-record]')) {
+            const textField = document.getElementById('settingsIntroductionText');
+            toggleVoiceRecording(INTRODUCTION_VOICE_KEY, textField ? textField.value : getIntroductionSettings().text, event.target.closest('[data-intro-record]'));
+            return;
+        }
+        if (event.target.closest('[data-intro-play]')) {
+            playIntroductionFromSettings();
+            return;
+        }
+        if (event.target.closest('[data-intro-delete-audio]')) {
+            deletePrivateMediaFromSetup(INTRODUCTION_VOICE_KEY);
+            return;
+        }
+        if (event.target.closest('[data-intro-icon-menu]')) {
+            showFallbackIconMenu('introduction', INTRODUCTION_ITEM_ID, '');
+            return;
+        }
+        if (event.target.closest('[data-intro-save]')) {
+            saveIntroductionSettingsFromPanel();
+            return;
+        }
+        if (event.target.closest('[data-intro-cancel]')) {
+            updateSettingsControls();
+            showToast('Introduction changes cancelled', 'warning');
             return;
         }
         if (event.target.closest('[data-open-about]')) {
@@ -808,9 +909,29 @@ function ensureSettingsOverlay() {
             showToast(appSettings.pressActivation === 'normal' ? 'Normal tap enabled' : 'Long press setting saved', 'success');
             return;
         }
+        if (event.target && event.target.id === 'settingsIntroductionEnabled') {
+            updateIntroductionSettingsPanelVisibility();
+            return;
+        }
+        if (event.target && event.target.id === 'settingsAutoUpdateCheck') {
+            appSettings.autoUpdateCheck = event.target.value === 'on';
+            saveAppSettings({ render: false });
+            showToast(appSettings.autoUpdateCheck ? 'Automatic update check on' : 'Automatic update check off', 'success');
+            if (appSettings.autoUpdateCheck) checkForAppUpdate({ manual: false });
+            return;
+        }
         if (event.target && event.target.id === 'fullBackupImportFile') {
             importFullAppBackup(event.target.files && event.target.files[0]);
             event.target.value = '';
+        }
+    });
+
+    overlay.addEventListener('input', (event) => {
+        if (event.target && event.target.id === 'settingsPopupCloseDelay') {
+            appSettings.popupCloseDelaySeconds = clampNumber(Number(event.target.value), 1, 5);
+            saveAppSettings({ render: false });
+            updateSettingsControls();
+            return;
         }
     });
 
@@ -839,9 +960,12 @@ async function refreshAppCodeSafely() {
         'For safety, export a private backup after adding important photos or recordings.'
     );
     if (!confirmed) return;
+    await performSafeAppCodeRefresh('Refreshing app files… local photos and voices will be kept.');
+}
 
+async function performSafeAppCodeRefresh(message = 'Refreshing app files… local photos and voices will be kept.') {
     hideSettingsOverlay();
-    showToast('Refreshing app files… local photos and voices will be kept.', 'info');
+    showToast(message, 'info');
 
     try {
         if ('caches' in window) {
@@ -872,6 +996,56 @@ async function refreshAppCodeSafely() {
     url.searchParams.set('refresh', Date.now().toString());
     window.location.replace(url.toString());
 }
+
+async function fetchWebsiteAppVersion() {
+    const response = await fetch(`./app-version.json?check=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Accept': 'application/json' }
+    });
+    if (!response.ok) throw new Error(`Version check failed (${response.status})`);
+    const data = await response.json();
+    return data && typeof data === 'object' ? data : null;
+}
+
+function isDifferentWebsiteVersion(versionInfo) {
+    const websiteVersion = String(versionInfo?.appVersion || '').trim();
+    return Boolean(websiteVersion && websiteVersion !== CURRENT_APP_VERSION);
+}
+
+async function checkForAppUpdate({ manual = false } = {}) {
+    try {
+        const versionInfo = await fetchWebsiteAppVersion();
+        const websiteVersion = String(versionInfo?.appVersion || '').trim();
+        if (!websiteVersion) {
+            if (manual) showToast('Could not read website version information', 'warning');
+            return false;
+        }
+
+        if (!isDifferentWebsiteVersion(versionInfo)) {
+            if (manual) showToast(`This device is already running ${CURRENT_APP_VERSION}`, 'success');
+            return false;
+        }
+
+        const updateNow = confirm(
+            `A newer MyNewVoice app version is available from the website.\n\n` +
+            `This device: ${CURRENT_APP_VERSION}\n` +
+            `Website: ${websiteVersion}\n\n` +
+            `Update app files now?\n\n` +
+            `Saved phrases, pictures, recorded voices, and imported backup content will be kept.`
+        );
+        if (updateNow) {
+            await performSafeAppCodeRefresh(`Updating MyNewVoice to ${websiteVersion}… saved content will be kept.`);
+        } else if (manual) {
+            showToast('Update skipped', 'warning');
+        }
+        return true;
+    } catch (error) {
+        console.warn('App update check failed:', error);
+        if (manual) showToast('Could not check for updates', 'error');
+        return false;
+    }
+}
+
 
 function ensurePrivateSetupOverlay() {
     let overlay = document.getElementById('privateSetupOverlay');
@@ -1346,6 +1520,9 @@ function ensureFallbackIconOverlay() {
             saveCategoryConfig();
             saveDataToStorage();
             renderCategoryMenuCards();
+        } else if (target.kind === 'introduction') {
+            const iconField = document.getElementById('settingsIntroductionIcon');
+            if (iconField) iconField.value = icon;
         } else {
             const phrase = findPhraseById(target.category || contentSetupPhraseCategory, target.id);
             if (phrase) {
@@ -1382,6 +1559,7 @@ async function deletePrivateMediaFromSetup(key) {
 async function refreshAfterPrivateMediaChange() {
     await refreshPrivateVoiceKeyIndex();
     renderCategoryMenuCards();
+    if (!currentViewCategory) renderIntroductionHeaderButton();
     const grid = document.getElementById('buttonGrid');
     if (grid && !grid.hidden && grid.dataset.category) populateGrid(grid.dataset.category);
 
@@ -1607,7 +1785,7 @@ async function buildCompleteBackupPayload() {
         type: FULL_APP_BACKUP_TYPE,
         version: 1,
         exportedAt: new Date().toISOString(),
-        appVersion: 'v30A',
+        appVersion: CURRENT_APP_VERSION,
         buttonData,
         appSettings: normaliseAppSettings(appSettings),
         categoryConfig: normaliseCategoryConfig(categoryConfig),
@@ -1726,7 +1904,14 @@ async function confirmAndClearAllAudio() {
 
 const DEFAULT_APP_SETTINGS = {
     displayMode: 'menu',
-    pressActivation: 'normal'
+    pressActivation: 'normal',
+    autoUpdateCheck: false,
+    popupCloseDelaySeconds: 2,
+    introduction: {
+        enabled: false,
+        text: '',
+        fallbackIcon: '👋'
+    }
 };
 const DISPLAY_MODES = new Set(['menu', 'simple-list']);
 const PRESS_ACTIVATION_DELAYS = {
@@ -1745,7 +1930,23 @@ function normaliseAppSettings(rawSettings) {
     const pressActivation = Object.prototype.hasOwnProperty.call(PRESS_ACTIVATION_DELAYS, raw.pressActivation)
         ? raw.pressActivation
         : DEFAULT_APP_SETTINGS.pressActivation;
-    return { displayMode, pressActivation };
+    const autoUpdateCheck = raw.autoUpdateCheck === true || raw.autoUpdateCheck === 'on';
+    const popupCloseDelaySeconds = clampNumber(Number(raw.popupCloseDelaySeconds || DEFAULT_APP_SETTINGS.popupCloseDelaySeconds), 1, 5);
+    const rawIntro = raw.introduction && typeof raw.introduction === 'object' ? raw.introduction : {};
+    const introduction = {
+        enabled: rawIntro.enabled === true || rawIntro.enabled === 'on',
+        text: String(rawIntro.text || '').slice(0, 500),
+        fallbackIcon: String(rawIntro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon).slice(0, 4) || DEFAULT_APP_SETTINGS.introduction.fallbackIcon
+    };
+    return { displayMode, pressActivation, autoUpdateCheck, popupCloseDelaySeconds, introduction };
+}
+
+function getPopupCloseDelayMs() {
+    return clampNumber(Number(normaliseAppSettings(appSettings).popupCloseDelaySeconds), 1, 5) * 1000;
+}
+
+function getIntroductionSettings() {
+    return normaliseAppSettings(appSettings).introduction;
 }
 
 function loadAppSettings() {
@@ -1767,10 +1968,130 @@ function saveAppSettings({ render = true } = {}) {
 }
 
 function updateSettingsControls() {
+    appSettings = normaliseAppSettings(appSettings);
     const displayModeSelect = document.getElementById('settingsDisplayMode');
     if (displayModeSelect) displayModeSelect.value = appSettings.displayMode;
     const pressActivationSelect = document.getElementById('settingsPressActivation');
     if (pressActivationSelect) pressActivationSelect.value = appSettings.pressActivation;
+    const delaySlider = document.getElementById('settingsPopupCloseDelay');
+    if (delaySlider) delaySlider.value = appSettings.popupCloseDelaySeconds;
+    const delayValue = document.getElementById('settingsPopupCloseDelayValue');
+    if (delayValue) delayValue.textContent = `${appSettings.popupCloseDelaySeconds} second${appSettings.popupCloseDelaySeconds === 1 ? '' : 's'}`;
+    const introEnabled = document.getElementById('settingsIntroductionEnabled');
+    if (introEnabled) introEnabled.value = appSettings.introduction.enabled ? 'on' : 'off';
+    const introText = document.getElementById('settingsIntroductionText');
+    if (introText) introText.value = appSettings.introduction.text || '';
+    const introIcon = document.getElementById('settingsIntroductionIcon');
+    if (introIcon) introIcon.value = appSettings.introduction.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon;
+    const autoUpdateSelect = document.getElementById('settingsAutoUpdateCheck');
+    if (autoUpdateSelect) autoUpdateSelect.value = appSettings.autoUpdateCheck ? 'on' : 'off';
+    updateIntroductionSettingsPanelVisibility();
+}
+
+function updateIntroductionSettingsPanelVisibility() {
+    const enabledSelect = document.getElementById('settingsIntroductionEnabled');
+    const panel = document.getElementById('introductionSettingsPanel');
+    if (!panel) return;
+    panel.hidden = enabledSelect ? enabledSelect.value !== 'on' : !getIntroductionSettings().enabled;
+}
+
+function saveIntroductionSettingsFromPanel() {
+    const enabledSelect = document.getElementById('settingsIntroductionEnabled');
+    const textField = document.getElementById('settingsIntroductionText');
+    const iconField = document.getElementById('settingsIntroductionIcon');
+    appSettings.introduction = {
+        enabled: enabledSelect ? enabledSelect.value === 'on' : false,
+        text: textField ? textField.value.trim() : '',
+        fallbackIcon: (iconField && iconField.value.trim()) ? iconField.value.trim().slice(0, 4) : DEFAULT_APP_SETTINGS.introduction.fallbackIcon
+    };
+    saveAppSettings({ render: true });
+    showToast('Introduction settings saved', 'success');
+}
+
+function showIntroductionImageOptions() {
+    window.__mnvImageOptions = {
+        kind: 'introduction',
+        id: INTRODUCTION_ITEM_ID,
+        category: '',
+        key: INTRODUCTION_IMAGE_KEY,
+        label: 'Introduction picture',
+        text: getIntroductionSettings().text || 'Introduction'
+    };
+    const overlay = ensureManagementImageOptionsOverlay();
+    const textEl = overlay.querySelector('#managementImageOptionsText');
+    getPrivateMediaRecord(INTRODUCTION_IMAGE_KEY).then(record => {
+        const editBtn = overlay.querySelector('[data-image-options-edit]');
+        const deleteBtn = overlay.querySelector('[data-image-options-delete]');
+        if (textEl) textEl.textContent = record ? 'The introduction button already has a saved picture. You can crop it again, replace it, delete it, or choose a fallback icon.' : 'The introduction button does not yet have a saved picture. You can load/take a picture or choose a fallback icon.';
+        if (editBtn) editBtn.disabled = !record;
+        if (deleteBtn) deleteBtn.disabled = !record;
+    });
+    overlay.style.display = 'flex';
+    void overlay.offsetWidth;
+    overlay.classList.add('show');
+}
+
+function playIntroductionFromSettings() {
+    const textField = document.getElementById('settingsIntroductionText');
+    const text = (textField && textField.value.trim()) || getIntroductionSettings().text || 'Introduction';
+    playIntroduction({ text });
+}
+
+async function playIntroduction(options = {}) {
+    const intro = getIntroductionSettings();
+    const text = String(options.text || intro.text || '').trim();
+    const popupToken = showPhrasePopup({ id: INTRODUCTION_ITEM_ID, text, isIntroduction: true });
+    const fakeButtonInfo = { id: INTRODUCTION_ITEM_ID, text };
+    const playedPrivateVoice = await playPrivateVoiceForPhrase(fakeButtonInfo, null, popupToken);
+    if (!playedPrivateVoice) speakText(text, null, { popupToken, showPopup: false });
+}
+
+async function renderIntroductionHeaderButton() {
+    const messageBar = document.getElementById('messageBar');
+    const messageText = document.getElementById('messageBarText');
+    if (!messageBar || !messageText) return;
+    let button = document.getElementById('introductionHeaderButton');
+    const intro = getIntroductionSettings();
+    if (!intro.enabled) {
+        if (button) button.hidden = true;
+        messageText.hidden = false;
+        messageText.textContent = MAIN_MENU_PROMPT;
+        return;
+    }
+    if (!button) {
+        button = document.createElement('button');
+        button.id = 'introductionHeaderButton';
+        button.type = 'button';
+        button.className = 'introduction-header-button';
+        button.setAttribute('aria-label', 'Play introduction');
+        button.innerHTML = '<img alt="" class="introduction-header-image"><span class="introduction-header-fallback" aria-hidden="true"></span><span class="introduction-header-text">Introduction</span>';
+        button.addEventListener('click', () => playIntroduction());
+        messageBar.appendChild(button);
+    }
+    messageText.hidden = true;
+    button.hidden = false;
+    const fallback = button.querySelector('.introduction-header-fallback');
+    const img = button.querySelector('.introduction-header-image');
+    if (fallback) fallback.textContent = intro.fallbackIcon || DEFAULT_APP_SETTINGS.introduction.fallbackIcon;
+    if (img) {
+        img.style.display = 'none';
+        img.removeAttribute('src');
+        const url = await getPrivateMediaObjectUrl(INTRODUCTION_IMAGE_KEY);
+        if (url) {
+            img.onload = () => { img.style.display = 'block'; if (fallback) fallback.hidden = true; };
+            img.onerror = () => { img.style.display = 'none'; if (fallback) fallback.hidden = false; };
+            img.src = url;
+        } else if (fallback) {
+            fallback.hidden = false;
+        }
+    }
+}
+
+function hideIntroductionHeaderButton() {
+    const button = document.getElementById('introductionHeaderButton');
+    const messageText = document.getElementById('messageBarText');
+    if (button) button.hidden = true;
+    if (messageText) messageText.hidden = false;
 }
 
 function getPressActivationDelay() {
@@ -3913,8 +4234,11 @@ function setMessageBarText(text) {
     if (!messageBar) return;
     const messageText = document.getElementById('messageBarText') || messageBar.querySelector('p');
     if (messageText) {
+        messageText.hidden = false;
         messageText.textContent = text || MAIN_MENU_PROMPT;
     }
+    const introButton = document.getElementById('introductionHeaderButton');
+    if (introButton) introButton.hidden = true;
 }
 
 function getFallbackIcon(category, text = '') {
@@ -4042,6 +4366,8 @@ function showMainMenu() {
         }
     }
 
+    renderIntroductionHeaderButton();
+
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
         tab.setAttribute('aria-selected', 'false');
@@ -4059,6 +4385,7 @@ function showCategorySubmenu(category) {
     currentViewCategory = category;
     document.body.classList.add('submenu-open');
     setMessageBarText(meta.label);
+    hideIntroductionHeaderButton();
 
     if (messageBar) messageBar.classList.add('submenu-titlebar');
     if (backToMenu) backToMenu.hidden = false;
@@ -4422,7 +4749,7 @@ function hidePhrasePopup(token = null) {
 function closePhrasePopupAfterMinimum(token) {
     if (token && token !== phrasePopupToken) return;
     if (phrasePopupTimer) clearTimeout(phrasePopupTimer);
-    phrasePopupTimer = setTimeout(() => hidePhrasePopup(token), 2000);
+    phrasePopupTimer = setTimeout(() => hidePhrasePopup(token), getPopupCloseDelayMs());
 }
 
 function showPhrasePopup(buttonInfoOrText) {
@@ -4482,6 +4809,14 @@ async function applyPhrasePopupZoomImage(buttonInfo, token) {
         };
         image.src = source;
     };
+
+    if (buttonInfo.isIntroduction) {
+        const introUrl = await getPrivateMediaObjectUrl(INTRODUCTION_IMAGE_KEY);
+        if (introUrl) {
+            showSource(introUrl);
+            return;
+        }
+    }
 
     const localPhraseUrl = await getPrivateMediaObjectUrl(getPrivateMediaKey('phrase', buttonInfo));
     if (localPhraseUrl) {
@@ -5293,6 +5628,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Build the main menu as stacked image cards, then show the main menu first.
     renderCategoryMenuCards();
     showMainMenu();
+    if (appSettings.autoUpdateCheck) {
+        setTimeout(() => checkForAppUpdate({ manual: false }), 1500);
+    }
     
     // Top menu card click handlers are attached when renderCategoryMenuCards() builds the cards.
 

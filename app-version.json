@@ -1,0 +1,6 @@
+{
+  "appVersion": "v33",
+  "updatedAt": "2026-05-14",
+  "label": "Introduction button and popup delay",
+  "notes": "Adds optional introduction button and configurable popup close delay; protected backup schema unchanged."
+}

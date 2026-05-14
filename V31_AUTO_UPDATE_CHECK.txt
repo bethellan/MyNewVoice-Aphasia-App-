@@ -1,0 +1,9 @@
+MyNewVoice v31 - Auto update check
+
+Adds an optional Settings-based update checker that compares this app with app-version.json on the hosted website.
+If a newer version is detected, the carer is prompted before app files are refreshed.
+
+The refresh clears only MyNewVoice app caches/service-worker app files and does not clear IndexedDB, local media, phrase/menu edits, recorded voices, or imported backup data.
+
+Backup/export schema is unchanged. Existing protected fields are preserved:
+type, version, exportedAt, appVersion, buttonData, categoryConfig, mediaRecords.

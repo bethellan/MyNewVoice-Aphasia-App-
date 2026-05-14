@@ -4,14 +4,15 @@ Created by Andrew Bethell in his own time for his father following a stroke.
 */
 
 // Service Worker for MyNewVoice PWA
-// v30a_professional_visual_polish: tactile button states and styling polish only; no schema or behaviour changes.
-const CACHE_NAME = 'mynewvoice-v30a-professional-visual-polish';
+// v33_intro_button_popup_delay: optional introduction button and popup delay; protected backup schema unchanged.
+const CACHE_NAME = 'mynewvoice-v33-intro-button-popup-delay';
 const urlsToCache = [
   './',
   './index.html',
   './style.css',
   './script.js',
-  './manifest.json'
+  './manifest.json',
+  './app-version.json'
 ];
 
 self.addEventListener('install', function(event) {
@@ -48,7 +49,8 @@ self.addEventListener('fetch', function(event) {
     url.pathname.endsWith('/index.html') ||
     url.pathname.endsWith('/script.js') ||
     url.pathname.endsWith('/style.css') ||
-    url.pathname.endsWith('/manifest.json');
+    url.pathname.endsWith('/manifest.json') ||
+    url.pathname.endsWith('/app-version.json');
 
   if (isAppShell) {
     event.respondWith(
